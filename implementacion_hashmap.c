@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /*
 * Este struct es el nodo del hashmap. Tiene nombre, descripcion y paises.
@@ -56,7 +57,11 @@ unsigned int djb2(char* string) {
     return hash; //luego hacerle el modulo 11
 }
 
-int encontrar_h(hashmap* hashmap, char* key) {
+/*
+* Funcion para encontrar un nodo con un key.
+* Estamos haciendo linear probing.
+*/
+int encontrar_n(hashmap* hashmap, char* key) {
     unsigned int hash = djb2(key);
 
     int index = hash % hashmap -> capacidad;
@@ -81,18 +86,132 @@ int encontrar_h(hashmap* hashmap, char* key) {
 }
 
 /*
+* Funcion para añadir un entry a el hashmap
+* Estamos usando linear probing, por lo que si ya esta usado el index, seguimos
+*/
+int agregar_h(hashmap* hashmap, char* key, char* nombre_completo, char* descripcion, Territorio* paises) {
+    unsigned int hash = djb2(key);
+    int index = hash % hashmap -> capacidad;
+    int inicio = index;
+
+    // Si el espacio no esta vacio, hacer linear probing
+    while (hashmap->nodos[index].key != NULL) {
+        if (strcmp(hashmap->nodos[index].key, key) == 0) {
+            free(hashmap->nodos[index].nombre_completo);
+            free(hashmap->nodos[index].descripcion);
+            
+            hashmap->nodos[index].nombre_completo = malloc(strlen(nombre_completo) + 1);
+            strcpy(hashmap->nodos[index].nombre_completo, nombre_completo);
+            
+            hashmap->nodos[index].descripcion = malloc(strlen(descripcion) + 1);
+            strcpy(hashmap->nodos[index].descripcion, descripcion);
+            
+            hashmap->nodos[index].paises = paises;
+            return index;
+        }
+
+        index++;
+        if (index >= hashmap->capacidad) {
+            index = 0;
+        }
+        if (index == inicio) {
+            return -1; //esta lleno el hashmap
+        }
+    }
+
+    // Agregar nuevo nodo
+    hashmap -> nodos[index].key = malloc(strlen(key) + 1);
+    strcpy(hashmap->nodos[index].key, key);
+    
+    hashmap->nodos[index].nombre_completo = malloc(strlen(nombre_completo) + 1);
+    strcpy(hashmap->nodos[index].nombre_completo, nombre_completo);
+    
+    hashmap->nodos[index].descripcion = malloc(strlen(descripcion) + 1);
+    strcpy(hashmap->nodos[index].descripcion, descripcion);
+    
+    hashmap->nodos[index].paises = paises;
+    
+    hashmap->length++;
+    return index;
+}
+
+/*
+* Funcion para obtener un nodo del hashmap por su key
+*/
+nodo* obtener_nodo(hashmap* hashmap, char* key) {
+    int index = encontrar_h(hashmap, key);
+    if (index == -1) {
+        return NULL;
+    }
+    return &hashmap->nodos[index];
+}
+
+/*
 * Funcion para eliminar el hashmap y liberar memoria
 */
 int eliminar_hashmap(hashmap* hashmap) {
-    //eliminar keys, luego nodos y finalmente todo el hashmap
-    for (int i = 0; i < hashmap -> capacidad; i++) {
-        free(hashmap -> nodos[i].key);
+    if (hashmap == NULL) {
+        return -1;
+    }
+    
+    // Liberar toda la memoria asignada a cada nodo
+    for (int i = 0; i < hashmap->capacidad; i++) {
+        if (hashmap->nodos[i].key != NULL) {
+            free(hashmap->nodos[i].key);
+            free(hashmap->nodos[i].nombre_completo);
+            free(hashmap->nodos[i].descripcion);
+        }
     }
 
-    free(hashmap -> nodos);
+    free(hashmap->nodos);
     free(hashmap);
 
     return 0;
 }
 
+/*
+* Funcion para eliminar un nodo específico del hashmap
+*/
+int eliminar_nodo_h(hashmap* hashmap, char* key) {
+    int index = encontrar_h(hashmap, key);
+    if (index == -1) {
+        return -1; //no está el nodo
+    }
+    
+    free(hashmap->nodos[index].key);
+    free(hashmap->nodos[index].nombre_completo);
+    free(hashmap->nodos[index].descripcion);
+    
+    hashmap->nodos[index].key = NULL;
+    hashmap->nodos[index].nombre_completo = NULL;
+    hashmap->nodos[index].descripcion = NULL;
+    hashmap->nodos[index].paises = NULL;
+    
+    hashmap->length--;
 
+    //hago esto para reinsertar las cosas después de eliminar, para reorganizar
+    int siguiente = (index + 1) % hashmap->capacidad;
+    while (hashmap->nodos[siguiente].key != NULL) {
+        char* temp_key = hashmap->nodos[siguiente].key;
+        char* temp_nombre = hashmap->nodos[siguiente].nombre_completo;
+        char* temp_desc = hashmap->nodos[siguiente].descripcion;
+        Territorio* temp_paises = hashmap->nodos[siguiente].paises;
+        
+        hashmap->nodos[siguiente].key = NULL;
+        hashmap->nodos[siguiente].nombre_completo = NULL;
+        hashmap->nodos[siguiente].descripcion = NULL;
+        hashmap->nodos[siguiente].paises = NULL;
+        hashmap->length--;
+        
+        // Reinsertar
+        agregar_h(hashmap, temp_key, temp_nombre, temp_desc, temp_paises);
+        
+        free(temp_key);
+        free(temp_nombre);
+        free(temp_desc);
+        
+        siguiente = (siguiente + 1) % hashmap->capacidad;
+    }
+    
+    return 0;
+}
