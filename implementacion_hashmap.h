@@ -1,0 +1,6 @@
+#ifndef IMPLEMENTACION_HASHMAP_H
+#define IMPLEMENTACION_HASHMAP_H
+
+//TODO: poner cosas
+
+#endif

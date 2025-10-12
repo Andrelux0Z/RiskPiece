@@ -1,3 +1,6 @@
+#include "generacion_terreno.h"
+#include "implementacion_hashmap.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,7 +8,7 @@
 typedef struct Territorio {
 	char codigo[3];
 	char nombre[32]; 
-	short conexiones[4][3];
+	char conexiones[4][3];
 	int cantidad_conexiones;
 	int A;
 	int B;
@@ -146,10 +149,3 @@ Territorio* construir_lista_ejemplo(void) {
 	return cabeza;
 }
 
-int main(void) {
-	Territorio* cabeza = construir_lista_ejemplo();
-
-	imprimir_tabla(cabeza);
-	liberar_lista(cabeza);
-	return 0;
-}
