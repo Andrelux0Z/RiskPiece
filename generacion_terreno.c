@@ -43,18 +43,14 @@ Territorio* crear_territorio(const char* codigo, const char* nombre, const char 
 	strncpy(t->nombre, nombre, sizeof(t->nombre) - 1);
 	t->nombre[sizeof(t->nombre) - 1] = '\0';
 
-	// Normaliza cantidad_conexiones a [0,4] para no salirnos del buffer
 	int n = cantidad_conexiones;
-	if (n < 0) n = 0;
-	if (n > 4) n = 4;
-	t->cantidad_conexiones = n;
 
 	// Copia hasta 'n' códigos de conexión (2 chars + '\0') y limpia el resto
-	for (int i = 0; i < n && i < 4; ++i) {
+	for (int i = 0; i < n && i < 4; i++) {
 		strncpy(t->conexiones[i], conexiones[i], sizeof(t->conexiones[i]) - 1);
 		t->conexiones[i][sizeof(t->conexiones[i]) - 1] = '\0';
 	}
-	for (int i = n; i < 4; ++i) {
+	for (int i = n; i < 4; i++) {
 		t->conexiones[i][0] = '\0';
 	}
 
@@ -148,4 +144,6 @@ Territorio* construir_lista_ejemplo(void) {
 
 	return cabeza;
 }
+
+
 
