@@ -5,7 +5,7 @@
 typedef struct Territorio {
 	char codigo[3];
 	char nombre[32]; 
-	char conexiones[4][3];
+	short conexiones[4][3];
 	int cantidad_conexiones;
 	int A;
 	int B;
