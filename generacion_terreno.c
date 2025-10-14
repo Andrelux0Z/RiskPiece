@@ -5,17 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct Territorio {
-	char codigo[3];
-	char nombre[32]; 
-	char conexiones[4][3];
-	int cantidad_conexiones;
-	int A;
-	int B;
-	int C;
-	struct Territorio *anterior;
-	struct Territorio *siguiente;
-} Territorio;
+//La definición de Territorio ya estaba en el header 
 
 // Limita un valor entero al rango [0,3]
 static int limitar_a_rango_0_a_3(int valor) {
@@ -44,6 +34,7 @@ Territorio* crear_territorio(const char* codigo, const char* nombre, const char 
 	t->nombre[sizeof(t->nombre) - 1] = '\0';
 
 	int n = cantidad_conexiones;
+	t->cantidad_conexiones = n;
 
 	// Copia hasta 'n' códigos de conexión (2 chars + '\0') y limpia el resto
 	for (int i = 0; i < n && i < 4; i++) {

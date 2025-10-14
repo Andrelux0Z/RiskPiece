@@ -8,13 +8,15 @@
 typedef struct nodo nodo;
 typedef struct hashmap hashmap;
 
-hashmap* crear_hashmap(void);
-int agregar_h(hashmap* hashmap, char* key, char* nombre_completo, char* descripcion, struct Territorio* paises);
-nodo* obtener_h(hashmap* hashmap, char* key);
-int encontrar_n(hashmap* hashmap, char* key);
-int eliminar_nodo_h(hashmap* hashmap, char* key);
-int eliminar_hashmap(hashmap* hashmap);
+// API clara y consistente
+hashmap* hashmap_crear(void);
+int hashmap_insertar(hashmap* mapa, char* key, char* nombre_completo, char* descripcion, struct Territorio* paises);
+nodo* hashmap_obtener(hashmap* mapa, char* key);
+int hashmap_buscar_indice(hashmap* mapa, char* key);
+int hashmap_eliminar_key(hashmap* mapa, char* key);
+int hashmap_eliminar(hashmap* mapa);
 
-unsigned int djb2(char* string);
+// Función hash (DJB2)
+unsigned int hashmap_djb2(char* string);
 
 #endif

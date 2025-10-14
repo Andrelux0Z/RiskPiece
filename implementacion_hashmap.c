@@ -13,28 +13,28 @@
 /*
 * Este struct es el nodo del hashmap. Tiene nombre, descripcion y paises.
 */
-typedef struct {
+struct nodo {
     char* key;
     char* nombre_completo;
     char* descripcion;
     struct Territorio* paises;
-} nodo;
+};
 
 /*
 * Implementacion del hashmap, va a usar los nodos, capacidad maxima 
 * (lo vamos a usar si llegamos a mas del 75% de longitud, cambiarlo) y longitud
 */
-typedef struct {
+struct hashmap {
     nodo* nodos;
     int capacidad;
     int length;
-} hashmap;
+};
 
 /*
 * Funcion para crear el hashmap, elegimos el length y capacidad. Luego,
 * asignamos la memoria de cada nodo con calloc
 */
-hashmap* crear_hashmap() {
+hashmap* hashmap_crear(void) {
     hashmap* hashmap = calloc(1, sizeof(hashmap));
     hashmap -> length = 0;
     hashmap -> capacidad = 10; //se puede cambiar al añadir más problemas, pongo 10 porque hay 5 problemas (50% capacidad, evitamos colisiones)
@@ -48,7 +48,7 @@ hashmap* crear_hashmap() {
 * Funcion para recibir un integer cuando se da un string (funcion hash)
 * En esto usé un hash de Daniel J. Bernstein llamado DJB2, más info en docu
 */
-unsigned int djb2(char* string) {
+unsigned int hashmap_djb2(char* string) {
     unsigned int hash = 5381; //unsigned lo que hace es no permitir negativos (igual que en Rust)
     int c;
     while((c = *string++)) {
@@ -61,8 +61,8 @@ unsigned int djb2(char* string) {
 * Funcion para encontrar un nodo con un key.
 * Estamos haciendo linear probing.
 */
-int encontrar_n(hashmap* hashmap, char* key) {
-    unsigned int hash = djb2(key);
+int hashmap_buscar_indice(hashmap* hashmap, char* key) {
+    unsigned int hash = hashmap_djb2(key);
 
     int index = hash % hashmap -> capacidad;
     int inicio = index; // no es 0, es donde iniciamos la busqueda
@@ -89,8 +89,8 @@ int encontrar_n(hashmap* hashmap, char* key) {
 * Funcion para añadir un entry a el hashmap
 * Estamos usando linear probing, por lo que si ya esta usado el index, seguimos
 */
-int agregar_h(hashmap* hashmap, char* key, char* nombre_completo, char* descripcion, Territorio* paises) {
-    unsigned int hash = djb2(key);
+int hashmap_insertar(hashmap* hashmap, char* key, char* nombre_completo, char* descripcion, Territorio* paises) {
+    unsigned int hash = hashmap_djb2(key);
     int index = hash % hashmap -> capacidad;
     int inicio = index;
 
@@ -138,8 +138,8 @@ int agregar_h(hashmap* hashmap, char* key, char* nombre_completo, char* descripc
 /*
 * Funcion para obtener un nodo del hashmap por su key
 */
-nodo* obtener_nodo(hashmap* hashmap, char* key) {
-    int index = encontrar_h(hashmap, key);
+nodo* hashmap_obtener(hashmap* hashmap, char* key) {
+    int index = hashmap_buscar_indice(hashmap, key);
     if (index == -1) {
         return NULL;
     }
@@ -149,7 +149,7 @@ nodo* obtener_nodo(hashmap* hashmap, char* key) {
 /*
 * Funcion para eliminar el hashmap y liberar memoria
 */
-int eliminar_hashmap(hashmap* hashmap) {
+int hashmap_eliminar(hashmap* hashmap) {
     if (hashmap == NULL) {
         return -1;
     }
@@ -172,8 +172,8 @@ int eliminar_hashmap(hashmap* hashmap) {
 /*
 * Funcion para eliminar un nodo específico del hashmap
 */
-int eliminar_nodo_h(hashmap* hashmap, char* key) {
-    int index = encontrar_h(hashmap, key);
+int hashmap_eliminar_key(hashmap* hashmap, char* key) {
+    int index = hashmap_buscar_indice(hashmap, key);
     if (index == -1) {
         return -1; //no está el nodo
     }
@@ -204,7 +204,7 @@ int eliminar_nodo_h(hashmap* hashmap, char* key) {
         hashmap->length--;
         
         // Reinsertar
-        agregar_h(hashmap, temp_key, temp_nombre, temp_desc, temp_paises);
+    hashmap_insertar(hashmap, temp_key, temp_nombre, temp_desc, temp_paises);
         
         free(temp_key);
         free(temp_nombre);
