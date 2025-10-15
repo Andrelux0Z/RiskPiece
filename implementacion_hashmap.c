@@ -222,7 +222,7 @@ int eliminar_nodo_h(hashmap* hashmap, char* key) {
 * una lista variable terminada que termina en NULL.
 * Esto no cambia la otra lista doblemente enlazada, solo crea otra. y el ... signitica que puede variar la cantidad de parametros.
 */
-Territorio* paises(const char* primero, ...) {
+Territorio* paises(char* primero, ...) {
     if (!primero) return NULL;
 
     Territorio* cabeza = NULL;
@@ -231,7 +231,7 @@ Territorio* paises(const char* primero, ...) {
     va_list ap;
     va_start(ap, primero);
 
-    const char* actual = primero;
+    char* actual = primero;
     while (actual != NULL) {
         Territorio* t = calloc(1, sizeof(Territorio));
         if (!t) {
@@ -252,7 +252,7 @@ Territorio* paises(const char* primero, ...) {
         }
         ultimo = t;
 
-        actual = va_arg(ap, const char*);
+        actual = va_arg(ap, char*);
     }
 
     va_end(ap);
