@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 
 /*
 * Este struct es el nodo del hashmap. Tiene nombre, descripcion y paises.
@@ -214,4 +215,46 @@ int eliminar_nodo_h(hashmap* hashmap, char* key) {
     }
     
     return 0;
+}
+
+/*
+* Crea una lista enlazada de Territorio solo con el nombre partir de
+* una lista variable terminada que termina en NULL.
+* Esto no cambia la otra lista doblemente enlazada, solo crea otra. y el ... signitica que puede variar la cantidad de parametros.
+*/
+Territorio* paises(const char* primero, ...) {
+    if (!primero) return NULL;
+
+    Territorio* cabeza = NULL;
+    Territorio* ultimo = NULL;
+
+    va_list ap;
+    va_start(ap, primero);
+
+    const char* actual = primero;
+    while (actual != NULL) {
+        Territorio* t = calloc(1, sizeof(Territorio));
+        if (!t) {
+            va_end(ap);
+            return cabeza; //devolvemos lo construido
+        }
+
+        strncpy(t->nombre, actual, sizeof(t->nombre) - 1);
+        t->nombre[sizeof(t->nombre) - 1] = '\0';
+
+        t->anterior = ultimo;
+        t->siguiente = NULL;
+        if (ultimo) {
+            ultimo->siguiente = t;
+        }
+        if (!cabeza) {
+            cabeza = t;
+        }
+        ultimo = t;
+
+        actual = va_arg(ap, const char*);
+    }
+
+    va_end(ap);
+    return cabeza;
 }

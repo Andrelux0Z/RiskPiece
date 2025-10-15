@@ -17,4 +17,7 @@ int eliminar_hashmap(hashmap* hashmap);
 
 unsigned int djb2(char* string);
 
+// Construye una lista enlazada de Territorio solo con el campo nombre a partir de nombres terminados en NULL
+Territorio* paises(const char* primero, ...);
+
 #endif
