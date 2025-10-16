@@ -7,19 +7,19 @@ int main() {
 
 	imprimir_tabla(cabeza);
 
-	hashmap* problematicas = crear_hashmap();
+	hashmap* problematicas = hashmap_crear();
 
-	agregar_h(problematicas, "P1", "Contaminación y cambio climático", "Reducir contaminación equilibrando desarrollo y sostenibilidad; malas decisiones aumentan temperatura y causan desastres.", paises("Dressrosa", "Wano", "Ba Sing Se", "Punk Hazard", NULL));
+	hashmap_insertar(problematicas, "P1", "Contaminación y cambio climático", "Reducir contaminación equilibrando desarrollo y sostenibilidad; malas decisiones aumentan temperatura y causan desastres.", cabeza);
 
-	agregar_h(problematicas, "P2", "Desigualdad social", "Gestionar recursos, empleo y educación entre clases; malas decisiones aumentan pobreza y protestas o colapsan la economía.", paises("Ba Sing Se", "Pisos Picados", "Dressrosa", NULL));
+	hashmap_insertar(problematicas, "P2", "Desigualdad social", "Gestionar recursos, empleo y educación entre clases; malas decisiones aumentan pobreza y protestas o colapsan la economía.", cabeza);
 
-	agregar_h(problematicas, "P3", "Corrupción gubernamental", "Transparencia vs enriquecimiento ilícito; la corrupción reduce inversión y genera caos social.", paises("Alabasta", "Somalia", "Dressrosa", NULL));
+	hashmap_insertar(problematicas, "P3", "Corrupción gubernamental", "Transparencia vs enriquecimiento ilícito; la corrupción reduce inversión y genera caos social.", cabeza);
 
-	agregar_h(problematicas, "P4", "Migración y refugiados", "Decidir cómo integrar migrantes, administrar recursos y mantener orden; afecta economía, diversidad y estabilidad.", paises("Punk Hazard", "Alabasta", "Somalia", "Oceania", NULL));
+	hashmap_insertar(problematicas, "P4", "Migración y refugiados", "Decidir cómo integrar migrantes, administrar recursos y mantener orden; afecta economía, diversidad y estabilidad.", cabeza);
 
-	agregar_h(problematicas, "P5", "Violencia y crimen organizado", "Contener bandas y crimen; invertir en educación/empleo o usar fuerza con costo social.", paises("Somalia", "Pisos Picados", "Dressrosa", "Wano", NULL));
+	hashmap_insertar(problematicas, "P5", "Violencia y crimen organizado", "Contener bandas y crimen; invertir en educación/empleo o usar fuerza con costo social.", cabeza);
 
-	eliminar_hashmap(problematicas);
+	hashmap_eliminar(problematicas);
 	liberar_lista(cabeza);
 	return 0;
 }
