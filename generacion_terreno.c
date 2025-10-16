@@ -19,7 +19,7 @@ int limitar_a_rango_0_a_3(int valor) {
 }
 
 // Crea y devuelve un nuevo Territorio 
-Territorio* crear_territorio(const char* codigo, const char* nombre, const char conexiones[][4], int cantidad_conexiones, int A, int B, int C) {
+Territorio* crear_territorio(const char* codigo, const char* nombre, const char conexiones[][3], int cantidad_conexiones, int A, int B, int C) {
     // Reserva memoria para el nuevo nodo y valida el resultado.
 	Territorio* t = (Territorio*)malloc(sizeof(Territorio));
 	if (!t) {
@@ -111,16 +111,16 @@ void liberar_lista(Territorio* cabeza) {
 Territorio* construir_lista_ejemplo(void) {
 	Territorio* cabeza = NULL;
 
-	const char c01[][4] = {"02","03"};
-	const char c02[][4] = {"01","04"};
-	const char c03[][4] = {"01","05","06"};
-	const char c04[][4] = {"02","07"};
-	const char c05[][4] = {"03","08"};
-	const char c06[][4] = {"03","09"};
-	const char c07[][4] = {"04","10"};
-	const char c08[][4] = {"05"};
-	const char c09[][4] = {"06"};
-	const char c10[][4] = {"07"};
+	const char c01[][3] = {"02","03"};
+	const char c02[][3] = {"01","04"};
+	const char c03[][3] = {"01","05","06"};
+	const char c04[][3] = {"02","07"};
+	const char c05[][3] = {"03","08"};
+	const char c06[][3] = {"03","09"};
+	const char c07[][3] = {"04","10"};
+	const char c08[][3] = {"05"};
+	const char c09[][3] = {"06"};
+	const char c10[][3] = {"07"};
 
 	agregar_territorio(&cabeza, crear_territorio("01", "Dressrosa",  c01, 2, 0, 0, 0));
 	agregar_territorio(&cabeza, crear_territorio("02", "Wano",  c02, 2, 0, 0, 0));

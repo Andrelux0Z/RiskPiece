@@ -15,7 +15,7 @@ typedef struct Territorio {
 } Territorio;
 
 // Función para crear un nuevo territorio
-Territorio* crear_territorio(const char* codigo, const char* nombre, const char conexiones[][4], int cantidad_conexiones, int A, int B, int C);
+Territorio* crear_territorio(const char* codigo, const char* nombre, const char conexiones[][3], int cantidad_conexiones, int A, int B, int C);
 
 // Función para agregar un territorio al final de la lista
 void agregar_territorio(Territorio** cabeza, Territorio* nodo);
