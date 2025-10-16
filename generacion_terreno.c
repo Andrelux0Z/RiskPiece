@@ -8,7 +8,7 @@
 //La definición de Territorio ya estaba en el header 
 
 // Limita un valor entero al rango [0,3]
-static int limitar_a_rango_0_a_3(int valor) {
+int limitar_a_rango_0_a_3(int valor) {
 	if (valor < 0) {
 		return 0;
 	}
@@ -136,5 +136,5 @@ Territorio* construir_lista_ejemplo(void) {
 	return cabeza;
 }
 
-
+// ejemplo para Marco
 
