@@ -20,6 +20,12 @@ Territorio* crear_territorio(const char* codigo, const char* nombre, const char 
 // Función para agregar un territorio al final de la lista
 void agregar_territorio(Territorio** cabeza, Territorio* nodo);
 
+//Funcion para inicializar random los valores de las problematicas
+void valoresProblematicas(Territorio* cabeza);
+
+//Funcion auxiliar para barajar (Fisher-Yates shuffle) usada en valoresProblematicas
+void barajar(int* arreglo, int n);   
+
 // Función para imprimir la tabla de territorios
 void imprimir_tabla(Territorio* cabeza);
 

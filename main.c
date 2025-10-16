@@ -2,8 +2,12 @@
 #include "generacion_terreno.h"
 #include <stddef.h> //lo vamos a usar para poner NULL
 
+
 int main() {
 	Territorio* cabeza = construir_lista_ejemplo();
+
+
+	valoresProblematicas(cabeza);
 
 	imprimir_tabla(cabeza);
 

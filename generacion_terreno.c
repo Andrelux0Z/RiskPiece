@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h> 
 
 //La definición de Territorio ya estaba en el header 
 
@@ -69,6 +70,78 @@ void agregar_territorio(Territorio** cabeza, Territorio* nodo) {
 	nodo->anterior = actual;
 }
 
+void valoresProblematicas(Territorio* cabeza){
+	printf("Generando valores para territorios problematicas...\n");
+	srand(time(NULL));
+	//Para 9 territorios
+	int n = 9; //Numero de territorios TODO: cambiar si se añaden más territorios o dejarlo en 9?
+	int indices[n];
+	int contador = 0;
+
+    Territorio* actual = cabeza;
+    
+    for (int i = 0; i < n; i++) {
+        indices[i] = i; // Llenar el arreglo con índices
+    }
+
+    barajar(indices, n); // Barajar los índices (Fisher-Yates shuffle)
+	actual = cabeza;
+
+	for(int i = 0; i < n; i++) {
+		actual->codigo[1] = indices[i]; // Asignar códigos barajados
+		actual = actual->siguiente;
+	}
+
+	actual = cabeza;
+
+    while (actual) {
+        if (actual->codigo[1] < 3) {
+            // Caso 1: Valores de 1 en todos los aspectos
+            actual->A = 1;
+            actual->B = 1;
+            actual->C = 1;
+        } else if (actual->codigo[1] < 6) {
+            // Caso 2: Un aspecto con 2, los otros con 1
+            int aspecto = rand() % 3; // Elegir aleatoriamente el aspecto que será 2
+            actual->A = (aspecto == 0) ? 2 : 1;
+            actual->B = (aspecto == 1) ? 2 : 1;
+            actual->C = (aspecto == 2) ? 2 : 1;
+        } else {
+            // Caso 3: Valores distintos en cada aspecto
+            actual->A = 1 + rand() % 3; // Valores entre 1 y 3
+            do {
+                actual->B = 1 + rand() % 3;
+            } while (actual->B == actual->A); // Asegurar que B sea distinto de A
+            do {
+                actual->C = 1 + rand() % 3;
+            } while (actual->C == actual->A || actual->C == actual->B); // Asegurar que C sea distinto de A y B
+        }
+
+        actual = actual->siguiente;
+    }
+	
+	actual = cabeza;
+
+	for(int i = 0; i < n; i++) {
+		char temp = '0' + i+1; // Convertir a carácter
+		actual->codigo[1] = temp; // Reasignar códigos en orden
+		actual = actual->siguiente;
+	}
+	printf("Valores generados.\n");
+}
+
+void barajar(int* arreglo, int n) {   //Fisher-Yates shuffle
+    for (int i = n - 1; i > 0; i--) {
+        int j = rand() % (i + 1);
+        int temp = arreglo[i];
+        arreglo[i] = arreglo[j];
+        arreglo[j] = temp;
+    }
+}
+
+
+
+
 void imprimir_tabla(Territorio* cabeza) {
     printf("Codigo  | Nombre         | Conexiones     | A | B | C\n");
     printf("------- + -------------- + -------------- + - + - + -\n");
@@ -131,10 +204,9 @@ Territorio* construir_lista_ejemplo(void) {
 	agregar_territorio(&cabeza, crear_territorio("07", "Somalia",   c07, 2, 0, 0, 0));
 	agregar_territorio(&cabeza, crear_territorio("08", "Ba Sing Se",c08, 1, 0, 0, 0));
 	agregar_territorio(&cabeza, crear_territorio("09", "Pharloom",   c09, 1, 0, 0, 0));
-	agregar_territorio(&cabeza, crear_territorio("10", "Oceania",   c10, 1, 0, 0, 0));
+	agregar_territorio(&cabeza, crear_territorio("10", "Oceania",   c10, 1, 0, 0, 0)); //TODO MAS PAISES O DEJARLO EN 9?
 
 	return cabeza;
 }
 
-// ejemplo para Marco
 
