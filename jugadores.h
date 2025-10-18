@@ -3,20 +3,20 @@
 
 #include "generacion_terreno.h"
 
-// Estructura que representa un territorio en el juego
+// Estructura que representa un jugador en el juego
 typedef struct jugador {
     char nombre[32];
     Territorio* ubicacion;
-    int turnos_restantes = 4;
-    jugador* sigt;
-    jugador* ant;
+    int turnos_restantes;
+    struct jugador* sigt;
+    struct jugador* ant;
 } jugador;
 
 typedef struct pirata {
     char nombre[32];
     Territorio* ubicacion;
-    pirata* sigt;
-    pirata* ant;
+    struct pirata* sigt;
+    struct pirata* ant;
 } pirata;
 
 typedef struct pirataList {
@@ -30,8 +30,10 @@ typedef struct jugadorList {
 } jugadorList;
 
 // Function declarations for jugadores.c
-void crearJugadoresInicial(Territorio* cabeza);
-void agregarJugador(jugadorList* jugadorList, Territorio* ubicacion, char* nombre);
+Territorio* buscarTerritorioPorCodigo(const char* codigo, Territorio* cabeza);
+void agregarJugador(jugadorList* lista, Territorio* ubicacion, char* nombre);
+void mostrarJugadores(jugadorList* lista);
+void liberarJugadores(jugadorList* lista);
 void piratasInicial(Territorio* cabeza);
 void agregarPirata(pirataList* pirataList, Territorio* ubicacion);
 
