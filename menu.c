@@ -28,7 +28,7 @@ void mostrar_banner() {
     printf("  ====================================================================\n\n");
 }
 
-// Funcion para mostrar información del juego
+// Funcion para mostrar informacion del juego
 void mostrar_informacion() {
     limpiar_pantalla();
     mostrar_banner();
@@ -66,18 +66,18 @@ void mostrar_informacion() {
     
     printf(">> MODOS DE JUEGO:\n");
     printf("   MODO FACIL: Mas recursos y tiempo para resolver problemas.\n");
-    printf("   MODO DIFICIL: Problemas más graves y un grupo adicional arruniando el mapa.\n\n");
+    printf("   MODO DIFICIL: Problemas mas graves y un grupo adicional arruinando el mapa.\n\n");
     
     printf("======================================================================\n");
-    printf("  Desarrollado por: Andrés, Marco y Fabián para Estructuras de Datos.\n");
+    printf("  Desarrollado por: Andres, Marco y Fabian para Estructuras de Datos.\n");
     printf("======================================================================\n\n");
     
-    printf("Presiona ENTER para volver al menú principal...");
+    printf("Presiona ENTER para volver al menu principal...");
     limpiar_buffer();
     getchar();
 }
 
-// Funcion para iniciar el modo fácil
+// Funcion para iniciar el modo facil
 void iniciar_modo_facil() {
     limpiar_pantalla();
     mostrar_banner();
@@ -119,7 +119,7 @@ void iniciar_modo_facil() {
     
     // TODO: seguir la logica del juego
     
-    printf("Presiona ENTER para volver al menú principal...");
+    printf("Presiona ENTER para volver al menu principal...");
     limpiar_buffer();
     getchar();
     
@@ -127,14 +127,14 @@ void iniciar_modo_facil() {
     liberar_lista(cabeza);
 }
 
-// Función para iniciar el modo dificil
+// Funcion para iniciar el modo dificil
 void iniciar_modo_dificil() {
     limpiar_pantalla();
     mostrar_banner();
     
     printf("======================================================================\n");
     printf("                  MODO DIFICIL (un verdadero reto!)               \n");
-    printf("+======================================================================+\n\n");
+    printf("======================================================================\n\n");
     
     
     // inicia el juego
@@ -146,30 +146,30 @@ void iniciar_modo_dificil() {
     
     hashmap* problematicas = hashmap_crear();
     
-    hashmap_insertar(problematicas, "P1", "Contaminación y cambio climático", 
-                     "Reducir contaminación equilibrando desarrollo y sostenibilidad; "
+    hashmap_insertar(problematicas, "P1", "Contaminacion y cambio climatico", 
+                     "Reducir contaminacion equilibrando desarrollo y sostenibilidad; "
                      "malas decisiones aumentan temperatura y causan desastres.", cabeza);
     
     hashmap_insertar(problematicas, "P2", "Desigualdad social", 
-                     "Gestionar recursos, empleo y educación entre clases; "
-                     "malas decisiones aumentan pobreza y protestas o colapsan la economía.", cabeza);
+                     "Gestionar recursos, empleo y educacion entre clases; "
+                     "malas decisiones aumentan pobreza y protestas o colapsan la economia.", cabeza);
     
-    hashmap_insertar(problematicas, "P3", "Corrupción gubernamental", 
-                     "Transparencia vs enriquecimiento ilícito; "
-                     "la corrupción reduce inversión y genera caos social.", cabeza);
+    hashmap_insertar(problematicas, "P3", "Corrupcion gubernamental", 
+                     "Transparencia vs enriquecimiento ilicito; "
+                     "la corrupcion reduce inversion y genera caos social.", cabeza);
     
-    hashmap_insertar(problematicas, "P4", "Migración y refugiados", 
-                     "Decidir cómo integrar migrantes, administrar recursos y mantener orden; "
-                     "afecta economía, diversidad y estabilidad.", cabeza);
+    hashmap_insertar(problematicas, "P4", "Migracion y refugiados", 
+                     "Decidir como integrar migrantes, administrar recursos y mantener orden; "
+                     "afecta economia, diversidad y estabilidad.", cabeza);
     
     hashmap_insertar(problematicas, "P5", "Violencia y crimen organizado", 
                      "Contener bandas y crimen; invertir en educacion/empleo "
                      "o usar fuerza con costo social.", cabeza);
     
     
-    // TODO: seguir logica del juego (hacer problemáticas más complicadas, cosa de piratas)
+    // TODO: seguir logica del juego (hacer problematicas mas complicadas, cosa de piratas)
     
-    printf("Presiona ENTER para volver al menú principal...");
+    printf("Presiona ENTER para volver al menu principal...");
     limpiar_buffer();
     getchar();
 
@@ -177,10 +177,10 @@ void iniciar_modo_dificil() {
     liberar_lista(cabeza);
 }
 
-// Función principal para mostrar el menú
+// Funcion principal para mostrar el menu
 void mostrar_menu_principal() {
     int opcion;
-    int salir = 0;
+    int      = 0;
     
     while (!salir) {
         limpiar_pantalla();
@@ -221,7 +221,7 @@ void mostrar_menu_principal() {
                 mostrar_banner();
                 printf("  Gracias por jugar SOCIETAS!\n");
                 printf("  El mundo te espera en la proxima...\n\n");
-                salir = 1;
+                     = 1;
                 break;
             default:
                 printf("\n  Opcion invalida. Presiona ENTER para continuar...");
