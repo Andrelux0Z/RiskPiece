@@ -1,8 +1,11 @@
 #include "menu.h"
 #include "implementacion_hashmap.h"
 #include "generacion_terreno.h"
+#include "jugadores.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
 // Funcion para limpiar el buffer
 void limpiar_buffer() {
@@ -86,31 +89,74 @@ void iniciar_modo_facil() {
     printf("                MODO FACIL (acaso tienes miedo?)                \n");
     printf("======================================================================\n\n");
     
+    // Inicializar semilla para numeros aleatorios
+    srand(time(NULL));
     
-    // incia el juego facil
+    // Iniciar el juego facil
     Territorio* cabeza = construir_lista_ejemplo();
     valoresProblematicas(cabeza);
     
-    printf("\nEstado inicial de los territorios:\n\n");
+    printf("\n>> Estado inicial de los territorios:\n\n");
     imprimir_tabla(cabeza);
     
+    // Crear lista de jugadores directamente
+    jugadorList* jugadores = malloc(sizeof(jugadorList));
+    if (!jugadores) {
+        printf("Error: memoria insuficiente\n");
+        return;
+    }
+    jugadores->inicio = NULL;
+    jugadores->final = NULL;
+    
+    // Pedir nombre del jugador
+    char nombreJugador[32];
+    printf("\n>> CONFIGURACION DE JUGADORES\n");
+    printf("--------------------------------------------------------------\n");
+    printf("Ingresa tu nombre (max 31 caracteres): ");
+    fgets(nombreJugador, sizeof(nombreJugador), stdin);
+    
+    // Eliminar el salto de linea del fgets
+    size_t len = strlen(nombreJugador);
+    if (len > 0 && nombreJugador[len-1] == '\n') {
+        nombreJugador[len-1] = '\0';
+    }
+    
+    // Si el nombre esta vacio, asignar un nombre por defecto
+    if (strlen(nombreJugador) == 0) {
+        strcpy(nombreJugador, "Jugador");
+    }
+    
+    // Asignar territorio aleatorio al jugador
+    int territorioAleatorio = rand() % 10 + 1;
+    char codigoTerritorio[3];
+    sprintf(codigoTerritorio, "%02d", territorioAleatorio);
+    
+    Territorio* ubicacionJugador = buscarTerritorioPorCodigo(codigoTerritorio, cabeza);
+    if (ubicacionJugador != NULL) {
+        agregarJugador(jugadores, ubicacionJugador, nombreJugador);
+    }
+    
+    // Mostrar informacion de los jugadores
+    mostrarJugadores(jugadores);
+    
+    // Crear hashmap de problematicas
     hashmap* problematicas = hashmap_crear();
     
-    hashmap_insertar(problematicas, "P1", "Contaminación y cambio climático", 
-                     "Reducir contaminación equilibrando desarrollo y sostenibilidad; "
+    hashmap_insertar(problematicas, "P1", "Contaminacion y cambio climatico", 
+                     "Reducir contaminacion equilibrando desarrollo y sostenibilidad; "
                      "malas decisiones aumentan temperatura y causan desastres.", cabeza);
     
     hashmap_insertar(problematicas, "P2", "Desigualdad social", 
-                     "Gestionar recursos, empleo y educación entre clases; "
-                     "malas decisiones aumentan pobreza y protestas o colapsan la economía.", cabeza);
+                     "Gestionar recursos, empleo y educacion entre clases; "
+                     "malas decisiones aumentan pobreza y protestas o colapsan la economia.", cabeza);
     
-    hashmap_insertar(problematicas, "P3", "Corrupción gubernamental", 
-                     "Transparencia vs enriquecimiento ilícito; "
-                     "la corrupción reduce inversión y genera caos social.", cabeza);
+    hashmap_insertar(problematicas, "P3", "Corrupcion gubernamental", 
+                     "Transparencia vs enriquecimiento ilicito; "
+                     "la corrupcion reduce inversion y genera caos social.", cabeza);
     
-    hashmap_insertar(problematicas, "P4", "Migración y refugiados", 
-                     "Decidir cómo integrar migrantes, administrar recursos y mantener orden; "
-                     "afecta economía, diversidad y estabilidad.", cabeza);
+    hashmap_insertar(problematicas, "P4", "Migracion y refugiados", 
+                     "Decidir como integrar migrantes, administrar recursos y mantener orden; "
+                     "afecta economia, diversidad y estabilidad.", cabeza);
     
     hashmap_insertar(problematicas, "P5", "Violencia y crimen organizado", 
                      "Contener bandas y crimen; invertir en educacion/empleo "
@@ -120,9 +166,10 @@ void iniciar_modo_facil() {
     // TODO: seguir la logica del juego
     
     printf("Presiona ENTER para volver al menu principal...");
-    limpiar_buffer();
     getchar();
     
+    // Liberar memoria
+    liberarJugadores(jugadores);
     hashmap_eliminar(problematicas);
     liberar_lista(cabeza);
 }
@@ -180,7 +227,7 @@ void iniciar_modo_dificil() {
 // Funcion principal para mostrar el menu
 void mostrar_menu_principal() {
     int opcion;
-    int      = 0;
+    int salir = 0;
     
     while (!salir) {
         limpiar_pantalla();
@@ -221,7 +268,7 @@ void mostrar_menu_principal() {
                 mostrar_banner();
                 printf("  Gracias por jugar SOCIETAS!\n");
                 printf("  El mundo te espera en la proxima...\n\n");
-                     = 1;
+                salir = 1;
                 break;
             default:
                 printf("\n  Opcion invalida. Presiona ENTER para continuar...");
