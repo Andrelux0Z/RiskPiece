@@ -290,6 +290,41 @@ int aumentar_estadistica_dificil(Territorio *cabeza, const char *codigo, char es
 	return 0;
 }
 
+//Funcion que aumenta la estadistica A/B/C de un territorio, si esta ya es 3, llama a la funcion que aumenta la estadistica de los vecinos
+void aumentar_estadistica(Territorio *cabeza, const char *codigo,char estadistica){
+
+	Territorio *actual = cabeza;
+	while (actual){
+		if (strcmp(actual->codigo, codigo) == 0){ // strcmp retorna 0 si se encuentra el codigo
+
+			//Si estadistica == 'A'
+			if(estadistica == 'A'){
+				if(actual->A < 3){
+					actual->A += 1;
+				}else
+					aumentar_estadistica_vecinos(cabeza,codigo,estadistica);
+			}
+
+			//Si estadistica == 'B'
+			else if(estadistica == 'B'){
+				if(actual->B < 3){
+					actual->B += 1;
+				}else
+					aumentar_estadistica_vecinos(cabeza,codigo,estadistica);
+			
+			//Si estadistica == 'C'
+			}else{
+				if(actual->C < 3)
+					actual->C += 1;
+			}
+
+		//Si no se encuentra el codigo, seguir buscando
+		actual = actual->siguiente;
+		}
+	}
+}
+
+
 // Incrementa A/B/C del territorio dado; si esa estadística ya es 3, en lugar de subir otras del mismo territorio,
 // aumenta esa MISMA estadística en todos los territorios vecinos (según su lista de conexiones).
 void aumentar_estadistica_vecinos(Territorio *cabeza, const char *codigo, char estadistica)
@@ -387,38 +422,7 @@ void eliminarTerritorio(Territorio *cabeza, const char *codigo)
 	}
 }
 
-void aumentar_estadistica(Territorio *cabeza, const char *codigo,char estadistica){
 
-	Territorio *actual = cabeza;
-	while (actual){
-		if (strcmp(actual->codigo, codigo) == 0){ // strcmp retorna 0 si se encuentra el codigo
-
-			//Si estadistica == 'A'
-			if(estadistica == 'A'){
-				if(actual->A < 3){
-					actual->A += 1;
-				}else
-					aumentar_estadistica_vecinos(cabeza,codigo,char estadistica);
-			}
-
-			//Si estadistica == 'B'
-			else if(estadistica == 'B'){
-				if(actual->B < 3){
-					actual->B += 1;
-				}else
-					aumentar_estadistica_vecinos(cabeza,codigo,char estadistica);
-			
-			//Si estadistica == 'C'
-			}else{
-				if(actual->C < 3)
-					actual->C += 1;
-			}
-
-		//Si no se encuentra el codigo, seguir buscando
-		actual = actual->siguiente;
-		}
-	}
-}
 
 
 
