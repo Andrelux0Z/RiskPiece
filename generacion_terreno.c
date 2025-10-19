@@ -316,3 +316,48 @@ void eliminarTerritorio(Territorio *cabeza, const char *codigo)
 		actual = actual->siguiente;
 	}
 }
+
+void aumentar_estadistica(Territorio *cabeza, const char *codigo,char estadistica){
+
+	Territorio *actual = cabeza;
+	while (actual){
+		if (strcmp(actual->codigo, codigo) == 0){ // strcmp retorna 0 si se encuentra el codigo
+
+			//Si estadistica == 'A'
+			if(estadistica == 'A'){
+				if(actual->A < 3){
+					actual->A += 1;
+				}else
+					aumentar_estadistica_vecinos(cabeza,codigo,char estadistica);
+			}
+
+			//Si estadistica == 'B'
+			else if(estadistica == 'B'){
+				if(actual->B < 3){
+					actual->B += 1;
+				}else
+					aumentar_estadistica_vecinos(cabeza,codigo,char estadistica);
+			
+			//Si estadistica == 'C'
+			}else{
+				if(actual->C < 3)
+					actual->C += 1;
+			}
+
+		//Si no se encuentra el codigo, seguir buscando
+		actual = actual->siguiente;
+		}
+	}
+}
+
+
+
+
+
+
+
+//Aumenta la estadistica de los paises vecinos si un pais llega a tener una estadistica en 3
+//void aumentar_estadistica_vecinos(){}
+
+//Verificar si los paises tienen en 3 la misma poblematica, para evitar un bucle que aumente indefinidamente a los vecinos
+//int verificar_bucle_problematicas(Territorio *cabeza,char estadistica){} 0 si no hay bucle, 1 si hay bucle
