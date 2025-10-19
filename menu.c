@@ -18,7 +18,7 @@ void limpiar_buffer()
         ;
 }
 
-// Funcion para hacer clear de terminal, ver info en docu
+// Funcion para hacer clear de terminal
 void limpiar_pantalla()
 {
 #ifdef _WIN32

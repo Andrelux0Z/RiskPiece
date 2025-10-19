@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h> 
+#include <time.h>
 
 // La definición de Territorio ya estaba en el header
 
@@ -15,20 +15,21 @@ int limitar_a_rango_0_a_3(int valor)
 	{
 		return 0;
 	}
-	if (valor > 3) {
+	if (valor > 3)
+	{
 		return 3;
 	}
 	return valor;
 }
 
-// Crea y devuelve un nuevo Territorio 
+// Crea y devuelve un nuevo Territorio
 Territorio *crear_territorio(const char *codigo, const char *nombre, const char conexiones[][3], int cantidad_conexiones, int A, int B, int C)
 {
-    // Reserva memoria para el nuevo nodo y valida el resultado.
+	// Reserva memoria para el nuevo nodo y valida el resultado.
 	Territorio *t = (Territorio *)malloc(sizeof(Territorio));
 	if (!t)
 	{
-		printf("Error: memoria insuficiente\n"); 
+		printf("Error: memoria insuficiente\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -72,169 +73,173 @@ void agregar_territorio(Territorio **cabeza, Territorio *nodo)
 		*cabeza = nodo;
 		return;
 	}
-	Territorio* actual = *cabeza;
-	while (actual->siguiente) actual = actual->siguiente;
+	Territorio *actual = *cabeza;
+	while (actual->siguiente)
+		actual = actual->siguiente;
 	actual->siguiente = nodo;
 	nodo->anterior = actual;
 }
 
-//Funcion que busca un territorio por su codigo y devuelve un puntero a ese territorio
-Territorio* buscarTerritorioPorCodigo(int codigo,Territorio* cabeza){
+// Nota: buscarTerritorioPorCodigo(const char*, Territorio*) esta implementada en jugadores.c
+// y declarada en jugadores.h. Aqui no se define para evitar definiciones duplicadas.
 
-    //Convertir el codigo a string
-    char codigoString[3];
-    sprintf(codigoString, "%02d", codigo);
-
-    //Buscar el territorio por su codigo
-    Territorio* actual = cabeza;
-    while(actual != NULL){
-        if(strcmp(actual->codigo, codigoString) == 0){
-            return actual;
-        }
-        actual = actual->siguiente;
-    }
-
-    return NULL;
-}
-
-
-void valoresProblematicas(Territorio* cabeza){
+void valoresProblematicas(Territorio *cabeza)
+{
 	printf("Generando valores para territorios problematicas...\n");
 	srand(time(NULL));
-	//Para 9 territorios
-	int n = 9; //Numero de territorios TODO: cambiar si se añaden más territorios o dejarlo en 9?
+	// Para 9 territorios
+	int n = 9; // Numero de territorios TODO: cambiar si se añaden más territorios o dejarlo en 9?
 	int indices[n];
 	int contador = 0;
 
-    Territorio* actual = cabeza;
-    
-    for (int i = 0; i < n; i++) {
-        indices[i] = i; // Llenar el arreglo con índices
-    }
+	Territorio *actual = cabeza;
 
-    barajar(indices, n); // Barajar los índices (Fisher-Yates shuffle)
+	for (int i = 0; i < n; i++)
+	{
+		indices[i] = i; // Llenar el arreglo con índices
+	}
+
+	barajar(indices, n); // Barajar los índices (Fisher-Yates shuffle)
 	actual = cabeza;
 
-	for(int i = 0; i < n; i++) {
+	for (int i = 0; i < n; i++)
+	{
 		actual->codigo[1] = indices[i]; // Asignar códigos barajados
 		actual = actual->siguiente;
 	}
 
 	actual = cabeza;
 
-    while (actual) {
-        if (actual->codigo[1] < 3) {
-            // Caso 1: Valores de 1 en todos los aspectos
-            actual->A = 1;
-            actual->B = 1;
-            actual->C = 1;
-        } else if (actual->codigo[1] < 6) {
-            // Caso 2: Un aspecto con 2, los otros con 1
-            int aspecto = rand() % 3; // Elegir aleatoriamente el aspecto que será 2
-            actual->A = (aspecto == 0) ? 2 : 1;
-            actual->B = (aspecto == 1) ? 2 : 1;
-            actual->C = (aspecto == 2) ? 2 : 1;
-        } else {
-            // Caso 3: Valores distintos en cada aspecto
-            actual->A = 1 + rand() % 3; // Valores entre 1 y 3
-            do {
-                actual->B = 1 + rand() % 3;
-            } while (actual->B == actual->A); // Asegurar que B sea distinto de A
-            do {
-                actual->C = 1 + rand() % 3;
-            } while (actual->C == actual->A || actual->C == actual->B); // Asegurar que C sea distinto de A y B
-        }
+	while (actual)
+	{
+		if (actual->codigo[1] < 3)
+		{
+			// Caso 1: Valores de 1 en todos los aspectos
+			actual->A = 1;
+			actual->B = 1;
+			actual->C = 1;
+		}
+		else if (actual->codigo[1] < 6)
+		{
+			// Caso 2: Un aspecto con 2, los otros con 1
+			int aspecto = rand() % 3; // Elegir aleatoriamente el aspecto que será 2
+			actual->A = (aspecto == 0) ? 2 : 1;
+			actual->B = (aspecto == 1) ? 2 : 1;
+			actual->C = (aspecto == 2) ? 2 : 1;
+		}
+		else
+		{
+			// Caso 3: Valores distintos en cada aspecto
+			actual->A = 1 + rand() % 3; // Valores entre 1 y 3
+			do
+			{
+				actual->B = 1 + rand() % 3;
+			} while (actual->B == actual->A); // Asegurar que B sea distinto de A
+			do
+			{
+				actual->C = 1 + rand() % 3;
+			} while (actual->C == actual->A || actual->C == actual->B); // Asegurar que C sea distinto de A y B
+		}
 
-        actual = actual->siguiente;
-    }
-	
+		actual = actual->siguiente;
+	}
+
 	actual = cabeza;
 
-	for(int i = 0; i < n; i++) {
-		char temp = '0' + i+1; // Convertir a carácter
+	for (int i = 0; i < n; i++)
+	{
+		char temp = '0' + i + 1;  // Convertir a carácter
 		actual->codigo[1] = temp; // Reasignar códigos en orden
 		actual = actual->siguiente;
 	}
 	printf("Valores generados.\n");
 }
 
-void barajar(int* arreglo, int n) {   //Fisher-Yates shuffle
-    for (int i = n - 1; i > 0; i--) {
-        int j = rand() % (i + 1);
-        int temp = arreglo[i];
-        arreglo[i] = arreglo[j];
-        arreglo[j] = temp;
-    }
+void barajar(int *arreglo, int n) // Fisher-Yates shuffle
+{
+	for (int i = n - 1; i > 0; i--)
+	{
+		int j = rand() % (i + 1);
+		int temp = arreglo[i];
+		arreglo[i] = arreglo[j];
+		arreglo[j] = temp;
+	}
 }
 
-void imprimir_tabla(Territorio* cabeza) {
-    printf("Codigo  | Nombre         | Conexiones     | A | B | C\n");
-    printf("------- + -------------- + -------------- + - + - + -\n");
+void imprimir_tabla(Territorio *cabeza)
+{
+	printf("Codigo  | Nombre         | Conexiones     | A | B | C\n");
+	printf("------- + -------------- + -------------- + - + - + -\n");
 
-    Territorio* actual = cabeza;
-    while (actual) {
-        // Imprimir conexiones en una sola cadena
-        char conexiones_str[128] = "";
-        for (int i = 0; i < actual->cantidad_conexiones; i++) {
-            strcat(conexiones_str, actual->conexiones[i]);
-            if (i < actual->cantidad_conexiones - 1)
-                 strcat(conexiones_str, ", ");
-        }
+	Territorio *actual = cabeza;
+	while (actual)
+	{
+		// Imprimir conexiones en una sola cadena
+		char conexiones_str[128] = "";
+		for (int i = 0; i < actual->cantidad_conexiones; i++)
+		{
+			strcat(conexiones_str, actual->conexiones[i]);
+			if (i < actual->cantidad_conexiones - 1)
+				strcat(conexiones_str, ", ");
+		}
 
-        // Imprimir una fila de la tabla
-        printf("%-7s | %-14s | %-14s | %d | %d | %d\n",
-               actual->codigo,
-               actual->nombre,
-               conexiones_str,
-               actual->A,
-               actual->B,
-               actual->C);
+		// Imprimir una fila de la tabla
+		printf("%-7s | %-14s | %-14s | %d | %d | %d\n",
+			   actual->codigo,
+			   actual->nombre,
+			   conexiones_str,
+			   actual->A,
+			   actual->B,
+			   actual->C);
 
-        actual = actual->siguiente;
-    }
+		actual = actual->siguiente;
+	}
 }
-
 
 // Libera la lista enlazada completa para evitar fugas de memoria
-void liberar_lista(Territorio* cabeza) {
-	Territorio* actual = cabeza;
-	while (actual) {
-		Territorio* siguiente = actual->siguiente;
+void liberar_lista(Territorio *cabeza)
+{
+	Territorio *actual = cabeza;
+	while (actual)
+	{
+		Territorio *siguiente = actual->siguiente;
 		free(actual);
 		actual = siguiente;
 	}
 }
 
 // Rellena la lista con 10 territorios
-Territorio* construir_lista_ejemplo(void) {
-	Territorio* cabeza = NULL;
+Territorio *construir_lista_ejemplo(void)
+{
+	Territorio *cabeza = NULL;
 
-	const char c01[][3] = {"02","03"};
-	const char c02[][3] = {"01","04"};
-	const char c03[][3] = {"01","05","06"};
-	const char c04[][3] = {"02","07"};
-	const char c05[][3] = {"03","08"};
-	const char c06[][3] = {"03","09"};
-	const char c07[][3] = {"04","10"};
-	const char c08[][3] = {"05"};
-	const char c09[][3] = {"06"};
-	const char c10[][3] = {"07"};
+	// Conexiones balanceadas (9 nodos):
+	// Ciclo: 01-02-03-04-05-06-07-08-09-01
+	// Extras: (01-04), (03-06), (07-09)
+	// Grados: 01(3),02(2),03(3),04(3),05(2),06(3),07(3),08(2),09(3)
+	const char c01[][3] = {"02", "09", "04"};
+	const char c02[][3] = {"01", "03"};
+	const char c03[][3] = {"02", "04", "06"};
+	const char c04[][3] = {"03", "05", "01"};
+	const char c05[][3] = {"04", "06"};
+	const char c06[][3] = {"05", "07", "03"};
+	const char c07[][3] = {"06", "08", "09"};
+	const char c08[][3] = {"07", "09"};
+	const char c09[][3] = {"08", "01", "07"};
 
-	agregar_territorio(&cabeza, crear_territorio("01", "Dressrosa",  c01, 2, 0, 0, 0));
-	agregar_territorio(&cabeza, crear_territorio("02", "Wano",  c02, 2, 0, 0, 0));
-	agregar_territorio(&cabeza, crear_territorio("03", "Punk Hazard",   c03, 3, 0, 0, 0));
-	agregar_territorio(&cabeza, crear_territorio("04", "Alabasta",   c04, 2, 0, 0, 0));
-	agregar_territorio(&cabeza, crear_territorio("05", "Pisos Picados",   c05, 2, 0, 0, 0));
-	agregar_territorio(&cabeza, crear_territorio("06", "Skypea",  c06, 2, 0, 0, 0));
-	agregar_territorio(&cabeza, crear_territorio("07", "Somalia",   c07, 2, 0, 0, 0));
-	agregar_territorio(&cabeza, crear_territorio("08", "Ba Sing Se",c08, 1, 0, 0, 0));
-	agregar_territorio(&cabeza, crear_territorio("09", "Pharloom",   c09, 1, 0, 0, 0));
-	agregar_territorio(&cabeza, crear_territorio("10", "Oceania",   c10, 1, 0, 0, 0)); //TODO MAS PAISES O DEJARLO EN 9?
+	agregar_territorio(&cabeza, crear_territorio("01", "Dressrosa", c01, 3, 0, 0, 0));
+	agregar_territorio(&cabeza, crear_territorio("02", "Wano", c02, 2, 0, 0, 0));
+	agregar_territorio(&cabeza, crear_territorio("03", "Punk Hazard", c03, 3, 0, 0, 0));
+	agregar_territorio(&cabeza, crear_territorio("04", "Alabasta", c04, 3, 0, 0, 0));
+	agregar_territorio(&cabeza, crear_territorio("05", "Pisos Picados", c05, 2, 0, 0, 0));
+	agregar_territorio(&cabeza, crear_territorio("06", "Skypea", c06, 3, 0, 0, 0));
+	agregar_territorio(&cabeza, crear_territorio("07", "Somalia", c07, 3, 0, 0, 0));
+	agregar_territorio(&cabeza, crear_territorio("08", "Ba Sing Se", c08, 2, 0, 0, 0));
+	agregar_territorio(&cabeza, crear_territorio("09", "Pharloom", c09, 3, 0, 0, 0));
 
 	return cabeza;
 }
 
-// lol
 //  Incrementa una estadística (A, B o C) del territorio con el código dado.
 //  Si la estadística ya es 3, se incrementan en 1 las otras dos, sin pasarse de 3.
 int aumentar_estadistica(Territorio *cabeza, const char *codigo, char estadistica)
@@ -285,21 +290,27 @@ int aumentar_estadistica(Territorio *cabeza, const char *codigo, char estadistic
 	return 0;
 }
 
-void eliminarTerritorio(Territorio* cabeza, const char* codigo) {
-	Territorio* actual = cabeza;
-	while (actual) {
-		if (strcmp(actual->codigo, codigo) == 0) {		//strcmp retorna 0 si se encuentra el codigo
-			
-			if (actual->anterior == NULL) {
-				actual->anterior->siguiente = actual->siguiente;	//Modificar el puntero del nodo anterior
-			} else {
-				cabeza = actual->siguiente;							// Si es el primer nodo, actualizar la cabeza
+void eliminarTerritorio(Territorio *cabeza, const char *codigo)
+{
+	Territorio *actual = cabeza;
+	while (actual)
+	{
+		if (strcmp(actual->codigo, codigo) == 0)
+		{ // strcmp retorna 0 si se encuentra el codigo
 
+			if (actual->anterior == NULL)
+			{
+				actual->anterior->siguiente = actual->siguiente; // Modificar el puntero del nodo anterior
 			}
-			if (actual->siguiente == NULL) {						
-				actual->siguiente->anterior = actual->anterior;		//Modificar el puntero del nodo siguiente
+			else
+			{
+				cabeza = actual->siguiente; // Si es el primer nodo, actualizar la cabeza
 			}
-			free(actual);						//Liberar memoria (funciona independientemente si es el ultimo nodo o no)		
+			if (actual->siguiente == NULL)
+			{
+				actual->siguiente->anterior = actual->anterior; // Modificar el puntero del nodo siguiente
+			}
+			free(actual); // Liberar memoria (funciona independientemente si es el ultimo nodo o no)
 			return;
 		}
 		actual = actual->siguiente;
