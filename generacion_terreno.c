@@ -6,9 +6,27 @@
 #include <string.h>
 #include <time.h>
 
-// La definición de Territorio ya estaba en el header
+/*
+* Struct que define el territorio (esto es una lista doblemente enlazada)
+* Cada nodo tiene un código, nombre, conexiones, A/B/C (cada problema), anterior/siguiente
+*/
+typedef struct Territorio
+{
+    char codigo[3];
+    char nombre[32];
+    char conexiones[4][3];
+    int cantidad_conexiones;
+    int A;
+    int B;
+    int C;
+    struct Territorio *anterior;
+    struct Territorio *siguiente;
+} Territorio;
 
-// Limita un valor entero al rango [0,3]
+/*
+* Funcion auxiliar para limitar el rango de los valores de las problematicas,
+* retorna el int.
+*/
 int limitar_a_rango_0_a_3(int valor)
 {
 	if (valor < 0)
@@ -22,8 +40,13 @@ int limitar_a_rango_0_a_3(int valor)
 	return valor;
 }
 
-// Crea y devuelve un nuevo Territorio
-Territorio *crear_territorio(const char *codigo, const char *nombre, const char conexiones[][3], int cantidad_conexiones, int A, int B, int C)
+/*
+* Funcion para crear un territorio, normalmente iniciamos con cabeza = NULL (como inicio).
+* La función sirve para crear también los nodos, por lo que ocupamos código,
+* nombre, conexiones (y su cantidad) y los valores de los 3 problemas.
+* Retorna el territorio.
+*/
+Territorio *crear_territorio(char *codigo, char *nombre, char conexiones[][3], int cantidad_conexiones, int A, int B, int C)
 {
 	// Reserva memoria para el nuevo nodo y valida el resultado.
 	Territorio *t = (Territorio *)malloc(sizeof(Territorio));
@@ -65,7 +88,10 @@ Territorio *crear_territorio(const char *codigo, const char *nombre, const char 
 	return t;
 }
 
-// Inserta un territorio al final de la lista
+/*
+* Funcion para agregar un territorio (nodo) creado con crear_territorio
+* lo que hace es poner este nuevo nodo al final de la lista doblemente enlazada
+*/
 void agregar_territorio(Territorio **cabeza, Territorio *nodo)
 {
 	if (!*cabeza)
@@ -80,11 +106,12 @@ void agregar_territorio(Territorio **cabeza, Territorio *nodo)
 	nodo->anterior = actual;
 }
 
+/*
+* Funcion para randomizar los valores de las problematicas.
+*/
 void valoresProblematicas(Territorio *cabeza)
 {
-	printf("Generando valores para territorios problematicas...\n");
-	// Para 9 territorios
-	int n = 9; // Numero de territorios TODO: cambiar si se añaden más territorios o dejarlo en 9?
+	int n = 9; // Numero de territorios territorios o dejarlo en 9?
 	int indices[n];
 
 	Territorio *actual = cabeza;
@@ -147,11 +174,14 @@ void valoresProblematicas(Territorio *cabeza)
 		actual->codigo[1] = temp; // Reasignar códigos en orden
 		actual = actual->siguiente;
 	}
-	printf("Valores generados.\n");
 }
 
+/*
+* Funcion que baraja, lo utilizamos para randomizar. usa un método llamado
+* Fisher-Yates, cuyo objetivo es randomizar un array.
+*/
 void barajar(int *arreglo, int n)
-{ // Fisher-Yates shuffle
+{
 	for (int i = n - 1; i > 0; i--)
 	{
 		int j = rand() % (i + 1);
@@ -161,6 +191,10 @@ void barajar(int *arreglo, int n)
 	}
 }
 
+/*
+* Funcion para imprimir los territorios.
+* Se manda cabeza, que es la lista doblemente enlazada que representa los territorios
+*/
 void imprimir_tabla(Territorio *cabeza)
 {
 	printf("Codigo  | Nombre         | Conexiones     | A | B | C\n");
@@ -191,7 +225,9 @@ void imprimir_tabla(Territorio *cabeza)
 	}
 }
 
-// Libera la lista enlazada completa para evitar fugas de memoria
+/*
+* Funcion para liberar la memoria utilizada, y evitar fugas de memoria
+*/
 void liberar_lista(Territorio *cabeza)
 {
 	Territorio *actual = cabeza;
@@ -203,7 +239,11 @@ void liberar_lista(Territorio *cabeza)
 	}
 }
 
-// Rellena la lista con 10 territorios
+/*
+* Funcion que usa las otras funciones para crear la lista de territorio,
+* con 9 territorios interconectados entre sí. Es ejemplo, porque se puede
+* reconstruir para hacer otros países
+*/
 Territorio *construir_lista_ejemplo(void)
 {
 	Territorio *cabeza = NULL;
@@ -233,8 +273,10 @@ Territorio *construir_lista_ejemplo(void)
 	return cabeza;
 }
 
-// Incrementa una estadística (A, B o C) del territorio con el código dado.
-// Si la estadística ya es 3, se incrementan en 1 las otras dos, sin pasarse de 3.
+/*
+* Funcion que incrementa una estadística (A, B o C) del territorio con el código dado.
+* Si la estadística ya es 3, se incrementan en 1 las otras dos, sin pasarse de 3.
+*/
 int aumentar_estadistica(Territorio *cabeza, const char *codigo, char estadistica)
 {
 	// Buscar el territorio por su código
