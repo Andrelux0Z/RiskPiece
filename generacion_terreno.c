@@ -83,7 +83,6 @@ void agregar_territorio(Territorio **cabeza, Territorio *nodo)
 void valoresProblematicas(Territorio *cabeza)
 {
 	printf("Generando valores para territorios problematicas...\n");
-	srand(time(NULL));
 	// Para 9 territorios
 	int n = 9; // Numero de territorios TODO: cambiar si se añaden más territorios o dejarlo en 9?
 	int indices[n];

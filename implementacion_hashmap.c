@@ -36,13 +36,16 @@ struct hashmap {
 * asignamos la memoria de cada nodo con calloc
 */
 hashmap* hashmap_crear(void) {
-    hashmap* hashmap = calloc(1, sizeof(hashmap));
-    hashmap -> length = 0;
-    hashmap -> capacidad = 10; //se puede cambiar al añadir más problemas, pongo 10 porque hay 5 problemas (50% capacidad, evitamos colisiones)
+    // Evitar sombreado de nombre de tipo y asignar el tamano correcto de la estructura
+    hashmap* mapa = (hashmap*)calloc(1, sizeof(struct hashmap));
+    if (!mapa) return NULL;
+    mapa->length = 0;
+    mapa->capacidad = 10; // se puede cambiar si crecen las problematicas
 
-    hashmap -> nodos = calloc(hashmap -> capacidad, sizeof(nodo));
+    mapa->nodos = (nodo*)calloc(mapa->capacidad, sizeof(nodo));
+    if (!mapa->nodos) { free(mapa); return NULL; }
 
-    return hashmap;
+    return mapa;
 }
 
 /*
