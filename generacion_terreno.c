@@ -108,11 +108,13 @@ void agregar_territorio(Territorio **cabeza, Territorio *nodo)
 
 /*
 * Funcion para randomizar los valores de las problematicas.
+* Nota: buscarTerritorioPorCodigo(const char*, Territorio*) esta implementada en jugadores.c
 */
 void valoresProblematicas(Territorio *cabeza)
 {
-	int n = 9; // Numero de territorios territorios o dejarlo en 9?
+	int n = 9; // Numero de territorios
 	int indices[n];
+	int contador = 0;
 
 	Territorio *actual = cabeza;
 
@@ -248,27 +250,29 @@ Territorio *construir_lista_ejemplo(void)
 {
 	Territorio *cabeza = NULL;
 
-	const char c01[][3] = {"02", "03"};
-	const char c02[][3] = {"01", "04"};
-	const char c03[][3] = {"01", "05", "06"};
-	const char c04[][3] = {"02", "07"};
-	const char c05[][3] = {"03", "08"};
-	const char c06[][3] = {"03", "09"};
-	const char c07[][3] = {"04", "10"};
-	const char c08[][3] = {"05"};
-	const char c09[][3] = {"06"};
-	const char c10[][3] = {"07"};
+	// Conexiones balanceadas (9 nodos):
+	// Ciclo: 01-02-03-04-05-06-07-08-09-01
+	// Extras: (01-04), (03-06), (07-09)
+	// Grados: 01(3),02(2),03(3),04(3),05(2),06(3),07(3),08(2),09(3)
+	const char c01[][3] = {"02", "09", "04"};
+	const char c02[][3] = {"01", "03"};
+	const char c03[][3] = {"02", "04", "06"};
+	const char c04[][3] = {"03", "05", "01"};
+	const char c05[][3] = {"04", "06"};
+	const char c06[][3] = {"05", "07", "03"};
+	const char c07[][3] = {"06", "08", "09"};
+	const char c08[][3] = {"07", "09"};
+	const char c09[][3] = {"08", "01", "07"};
 
-	agregar_territorio(&cabeza, crear_territorio("01", "Dressrosa", c01, 2, 0, 0, 0));
+	agregar_territorio(&cabeza, crear_territorio("01", "Dressrosa", c01, 3, 0, 0, 0));
 	agregar_territorio(&cabeza, crear_territorio("02", "Wano", c02, 2, 0, 0, 0));
 	agregar_territorio(&cabeza, crear_territorio("03", "Punk Hazard", c03, 3, 0, 0, 0));
-	agregar_territorio(&cabeza, crear_territorio("04", "Alabasta", c04, 2, 0, 0, 0));
+	agregar_territorio(&cabeza, crear_territorio("04", "Alabasta", c04, 3, 0, 0, 0));
 	agregar_territorio(&cabeza, crear_territorio("05", "Pisos Picados", c05, 2, 0, 0, 0));
-	agregar_territorio(&cabeza, crear_territorio("06", "Skypea", c06, 2, 0, 0, 0));
-	agregar_territorio(&cabeza, crear_territorio("07", "Somalia", c07, 2, 0, 0, 0));
-	agregar_territorio(&cabeza, crear_territorio("08", "Ba Sing Se", c08, 1, 0, 0, 0));
-	agregar_territorio(&cabeza, crear_territorio("09", "Pharloom", c09, 1, 0, 0, 0));
-	agregar_territorio(&cabeza, crear_territorio("10", "Oceania", c10, 1, 0, 0, 0)); // TODO MAS PAISES O DEJARLO EN 9?
+	agregar_territorio(&cabeza, crear_territorio("06", "Skypea", c06, 3, 0, 0, 0));
+	agregar_territorio(&cabeza, crear_territorio("07", "Somalia", c07, 3, 0, 0, 0));
+	agregar_territorio(&cabeza, crear_territorio("08", "Ba Sing Se", c08, 2, 0, 0, 0));
+	agregar_territorio(&cabeza, crear_territorio("09", "Pharloom", c09, 3, 0, 0, 0));
 
 	return cabeza;
 }
@@ -324,3 +328,149 @@ int aumentar_estadistica(Territorio *cabeza, const char *codigo, char estadistic
 	}
 	return 0;
 }
+
+//Funcion que aumenta la estadistica A/B/C de un territorio, si esta ya es 3, llama a la funcion que aumenta la estadistica de los vecinos
+void aumentar_estadistica(Territorio *cabeza, const char *codigo,char estadistica){
+
+	Territorio *actual = cabeza;
+	while (actual){
+		if (strcmp(actual->codigo, codigo) == 0){ // strcmp retorna 0 si se encuentra el codigo
+
+			//Si estadistica == 'A'
+			if(estadistica == 'A'){
+				if(actual->A < 3){
+					actual->A += 1;
+				}else
+					aumentar_estadistica_vecinos(cabeza,codigo,estadistica);
+			}
+
+			//Si estadistica == 'B'
+			else if(estadistica == 'B'){
+				if(actual->B < 3){
+					actual->B += 1;
+				}else
+					aumentar_estadistica_vecinos(cabeza,codigo,estadistica);
+			
+			//Si estadistica == 'C'
+			}else{
+				if(actual->C < 3)
+					actual->C += 1;
+			}
+
+		//Si no se encuentra el codigo, seguir buscando
+		actual = actual->siguiente;
+		}
+	}
+}
+
+
+// Incrementa A/B/C del territorio dado; si esa estadística ya es 3, en lugar de subir otras del mismo territorio,
+// aumenta esa MISMA estadística en todos los territorios vecinos (según su lista de conexiones).
+void aumentar_estadistica_vecinos(Territorio *cabeza, const char *codigo, char estadistica)
+{
+	// localizar el territorio base por codigo (string de 2 chars)
+	Territorio *actual = cabeza;
+	while (strcmp(actual->codigo, codigo) != 0)
+	{
+		actual = actual->siguiente;
+	}
+
+	int *objetivo = NULL;
+
+	if (estadistica == 'A')
+	{
+		objetivo = &actual->A;
+	}
+	else if (estadistica == 'B')
+	{
+		objetivo = &actual->B;
+	}
+	else
+	{
+		objetivo = &actual->C;
+	}
+
+	// Si la estadística del territorio aún no está al máximo, simplemente súbela en el propio territorio
+	if (*objetivo < 3)
+	{
+		*objetivo = *objetivo + 1;
+		return;
+	}
+
+	// Si ya está en 3, propagar a todos los vecinos la misma estadística
+	for (int i = 0; i < actual->cantidad_conexiones; i++)
+	{
+		const char *codigoVecino = actual->conexiones[i];
+
+		// buscar vecino por codigo recorriendo la lista
+		Territorio *vec = cabeza;
+		while (strcmp(vec->codigo, codigoVecino) != 0)
+		{
+			vec = vec->siguiente;
+		}
+		int *dest = NULL;
+		if (estadistica == 'A')
+		{
+			dest = &vec->A;
+		}
+		else if (estadistica == 'B')
+		{
+			dest = &vec->B;
+		}
+		else
+		{
+			dest = &vec->C;
+		}
+		if (*dest < 3)
+		{
+			*dest = *dest + 1;
+			return;
+		}
+		if (comprobar_tres_todos(cabeza, estadistica) == 1)
+		{
+			return;
+		}
+		aumentar_estadistica_vecinos(cabeza, codigoVecino, estadistica);
+	}
+}
+
+void eliminarTerritorio(Territorio *cabeza, const char *codigo)
+{
+	Territorio *actual = cabeza;
+	while (actual)
+	{
+		if (strcmp(actual->codigo, codigo) == 0)
+		{ // strcmp retorna 0 si se encuentra el codigo
+
+			if (actual->anterior == NULL)
+			{
+				actual->anterior->siguiente = actual->siguiente; // Modificar el puntero del nodo anterior
+			}
+			else
+			{
+				cabeza = actual->siguiente; // Si es el primer nodo, actualizar la cabeza
+			}
+			if (actual->siguiente == NULL)
+			{
+				actual->siguiente->anterior = actual->anterior; // Modificar el puntero del nodo siguiente
+			}
+			free(actual); // Liberar memoria (funciona independientemente si es el ultimo nodo o no)
+			return;
+		}
+		actual = actual->siguiente;
+	}
+}
+
+
+
+
+
+
+
+
+
+//Aumenta la estadistica de los paises vecinos si un pais llega a tener una estadistica en 3
+//void aumentar_estadistica_vecinos(){}
+
+//Verificar si los paises tienen en 3 la misma poblematica, para evitar un bucle que aumente indefinidamente a los vecinos
+//int verificar_bucle_problematicas(Territorio *cabeza,char estadistica){} 0 si no hay bucle, 1 si hay bucle
