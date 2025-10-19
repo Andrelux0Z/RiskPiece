@@ -7,6 +7,11 @@
 #include <string.h>
 #include <time.h>
 
+// para no tener que ponerlo muchas veces
+char* PROB_A_LABEL = "Contaminacion y cambio climatico";
+char* PROB_B_LABEL = "Desigualdad social";
+char* PROB_C_LABEL = "Corrupcion gubernamental";
+
 // Funcion para limpiar el buffer
 void limpiar_buffer() {
     int c;
@@ -29,6 +34,98 @@ void mostrar_banner() {
     printf("                              SOCIETAS\n");
     printf("                  Un juego de estrategia y decisiones\n");
     printf("  ====================================================================\n\n");
+}
+
+// ---- Helpers de turno (solo para este modulo) ----
+static void mostrar_estado_territorio(Territorio* t) {
+    if (!t) return;
+    printf("\n== Territorio actual ==\n");
+    printf("  %s (%s)\n", t->nombre, t->codigo);
+    printf("    A:%d - %s\n", t->A, PROB_A_LABEL);
+    printf("    B:%d - %s\n", t->B, PROB_B_LABEL);
+    printf("    C:%d - %s\n\n", t->C, PROB_C_LABEL);
+}
+
+static void listar_vecinos(Territorio* t) {
+    if (!t) return;
+    printf("Vecinos disponibles:\n");
+    for (int i = 0; i < t->cantidad_conexiones; i++) {
+        printf("  %d) %s\n", i + 1, t->conexiones[i]);
+    }
+}
+
+static int indice_vecino_valido(Territorio* t, int idx1based) {
+    return t && idx1based >= 1 && idx1based <= t->cantidad_conexiones;
+}
+
+static void disminuir_problema(Territorio* t, char est) {
+    if (!t) return;
+    if (est == 'A' || est == 'a') { if (t->A > 0) t->A--; }
+    else if (est == 'B' || est == 'b') { if (t->B > 0) t->B--; }
+    else if (est == 'C' || est == 'c') { if (t->C > 0) t->C--; }
+}
+
+static void ejecutar_primer_turno(jugadorList* jugadores, Territorio* cabeza) {
+    if (!jugadores || !jugadores->inicio) return;
+    jugador* j1 = jugadores->inicio; // jugador humano
+    int acciones = 4;
+
+    printf("\n================ PRIMER TURNO (Jugador: %s) ================\n", j1->nombre);
+    mostrar_estado_territorio(j1->ubicacion);
+
+    while (acciones > 0) {
+        printf("Acciones restantes: %d\n", acciones);
+        printf("Elige una accion:\n");
+        printf("  1) Moverse a un pais vecino\n");
+        printf("  2) Hacer proyecto (bajar A/B/C en 1)\n");
+        printf("  3) Ver estado actual\n");
+        printf("  4) Ver vecinos\n");
+        printf("Seleccion: ");
+        int op = 0;
+        if (scanf("%d", &op) != 1) { limpiar_buffer(); printf("\nEntrada invalida.\n\n"); continue; }
+        limpiar_buffer();
+
+        if (op == 1) {
+            listar_vecinos(j1->ubicacion);
+            printf("Ingresa el numero del vecino (1-%d): ", j1->ubicacion->cantidad_conexiones);
+            int choice = 0;
+            if (scanf("%d", &choice) != 1) { limpiar_buffer(); printf("\nEntrada invalida.\n\n"); continue; }
+            limpiar_buffer();
+            if (!indice_vecino_valido(j1->ubicacion, choice)) { printf("Opcion fuera de rango.\n\n"); continue; }
+            const char* cod = j1->ubicacion->conexiones[choice - 1];
+            Territorio* destino = buscarTerritorioPorCodigo(cod, cabeza);
+            if (!destino) { printf("No se encontro el territorio destino.\n\n"); continue; }
+            j1->ubicacion = destino;
+            printf("Te moviste a %s (%s).\n\n", destino->nombre, destino->codigo);
+            acciones--;
+        } else if (op == 2) {
+            printf("Elige que problema bajar (A/B/C)\n");
+            printf("  A = %s\n  B = %s\n  C = %s\n", PROB_A_LABEL, PROB_B_LABEL, PROB_C_LABEL);
+            printf("Seleccion: ");
+            int c = getchar();
+            limpiar_buffer();
+            if (c == EOF) { printf("Entrada invalida.\n\n"); continue; }
+            char est = (char)c;
+            if (est!='A'&&est!='a'&&est!='B'&&est!='b'&&est!='C'&&est!='c') { printf("Opcion invalida. Usa A, B o C.\n\n"); continue; }
+            disminuir_problema(j1->ubicacion, est);
+            printf("Proyecto aplicado en %s.\n  A:%d (%s)  B:%d (%s)  C:%d (%s)\n\n",
+                   j1->ubicacion->nombre,
+                   j1->ubicacion->A, PROB_A_LABEL,
+                   j1->ubicacion->B, PROB_B_LABEL,
+                   j1->ubicacion->C, PROB_C_LABEL);
+            acciones--;
+        } else if (op == 3) {
+            mostrar_estado_territorio(j1->ubicacion);
+        } else if (op == 4) {
+            listar_vecinos(j1->ubicacion);
+            printf("\n");
+        } else {
+            printf("Opcion invalida.\n\n");
+        }
+    }
+
+    printf("Turno finalizado. Posicion actual: %s (%s) | A:%d B:%d C:%d\n\n",
+           j1->ubicacion->nombre, j1->ubicacion->codigo, j1->ubicacion->A, j1->ubicacion->B, j1->ubicacion->C);
 }
 
 // Funcion para mostrar informacion del juego
@@ -57,15 +154,13 @@ void mostrar_informacion() {
     
     printf(">> PROBLEMAS:\n");
     printf("   Cada territorio enfrenta 3 problemas diferentes:\n");
-    printf("   P1: Contaminacion y cambio climatico\n");
-    printf("   P2: Desigualdad social\n");
-    printf("   P3: Corrupcion gubernamental\n");
-    printf("   P4: Migracion y refugiados\n");
-    printf("   P5: Violencia y crimen organizado\n\n");
+    printf("   A: Contaminacion y cambio climatico\n");
+    printf("   B: Desigualdad social\n");
+    printf("   C: Corrupcion gubernamental\n");
     
     printf(">> ESTADISTICAS:\n");
-    printf("   Cada territorio tiene tres niveles de problemas (A, B, C)\n");
-    printf("   con valores del 0 al 3. La idea es no dejar que pase de C.\n\n");
+    printf("   Cada territorio tiene tres indicadores A/B/C con valores de 0 a 3.\n");
+    printf("   Mapeo actual: A = %s | B = %s | C = %s\n\n", "Contaminacion y cambio climatico", "Desigualdad social", "Corrupcion gubernamental");
     
     printf(">> MODOS DE JUEGO:\n");
     printf("   MODO FACIL: Mas recursos y tiempo para resolver problemas.\n");
@@ -136,6 +231,19 @@ void iniciar_modo_facil() {
         agregarJugador(jugadores, ubicacionJugador, nombreJugador);
     }
     
+    // Crear jugador 2 automatico: ONU en un territorio distinto
+    int territorioONU;
+    Territorio* ubicacionONU = NULL;
+    do {
+        territorioONU = rand() % 10 + 1;
+        char codigoONU[3];
+        sprintf(codigoONU, "%02d", territorioONU);
+        ubicacionONU = buscarTerritorioPorCodigo(codigoONU, cabeza);
+    } while (ubicacionONU == NULL || (ubicacionJugador != NULL && strcmp(ubicacionONU->codigo, ubicacionJugador->codigo) == 0));
+
+    // Nombre fijo "ONU"
+    agregarJugador(jugadores, ubicacionONU, "ONU");
+    
     // Mostrar informacion de los jugadores
     mostrarJugadores(jugadores);
     
@@ -163,8 +271,9 @@ void iniciar_modo_facil() {
                      "o usar fuerza con costo social.", cabeza);
     
     
-    // TODO: seguir la logica del juego
-    
+    // Primer turno del jugador 1
+    ejecutar_primer_turno(jugadores, cabeza);
+
     printf("Presiona ENTER para volver al menu principal...");
     getchar();
     
