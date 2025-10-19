@@ -233,8 +233,9 @@ Territorio *construir_lista_ejemplo(void)
 	return cabeza;
 }
 
-// Incrementa una estadística (A, B o C) del territorio con el código dado.
-// Si la estadística ya es 3, se incrementan en 1 las otras dos, sin pasarse de 3.
+// lol
+//  Incrementa una estadística (A, B o C) del territorio con el código dado.
+//  Si la estadística ya es 3, se incrementan en 1 las otras dos, sin pasarse de 3.
 int aumentar_estadistica(Territorio *cabeza, const char *codigo, char estadistica)
 {
 	// Buscar el territorio por su código
