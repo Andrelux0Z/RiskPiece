@@ -3,10 +3,14 @@
 
 #include "generacion_terreno.h"
 
-// Función para mostrar mensaje de victoria
-void ganar();
+// Mensajes de fin de juego
+void ganar(void);
+void perder(void);
 
-// Función que verifica si todos los territorios tienen al menos una estadística igual a cero
-void verificar_condicion_victoria(Territorio *cabeza);
+// Devuelve 1 si TODOS los territorios tienen al menos una estadística en 0
+int comprobar_ganar(Territorio *cabeza);
 
-#endif // COMPROBACIONES_H
+// Retorna 1 si se pierde
+int comprobar_perder(Territorio *cabeza);
+
+#endif

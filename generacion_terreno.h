@@ -24,6 +24,9 @@ void agregar_territorio(Territorio **cabeza, Territorio *nodo);
 // Funcion para inicializar random los valores de las problematicas
 void valoresProblematicas(Territorio *cabeza);
 
+// Incrementa una estadística (A/B/C) del territorio; si está al máximo, propaga a vecinos
+void aumentar_estadistica_vecinos(Territorio *cabeza, const char *codigo, char estadistica);
+
 // Funcion auxiliar para barajar (Fisher-Yates shuffle) usada en valoresProblematicas
 void barajar(int *arreglo, int n);
 
@@ -38,6 +41,6 @@ Territorio *construir_lista_ejemplo(void);
 
 // Incrementa una estadística (A, B o C) de un territorio identificado por su código.
 // Si la estadística indicada ya es 3, se incrementan en 1 las otras dos, sin pasarse de 3.
-int aumentar_estadistica(Territorio *cabeza, const char *codigo, char estadistica);
+int aumentar_estadistica_dificil(Territorio *cabeza, const char *codigo, char estadistica);
 
 #endif

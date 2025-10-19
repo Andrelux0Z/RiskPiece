@@ -242,7 +242,7 @@ Territorio *construir_lista_ejemplo(void)
 
 //  Incrementa una estadística (A, B o C) del territorio con el código dado.
 //  Si la estadística ya es 3, se incrementan en 1 las otras dos, sin pasarse de 3.
-int aumentar_estadistica(Territorio *cabeza, const char *codigo, char estadistica)
+int aumentar_estadistica_dificil(Territorio *cabeza, const char *codigo, char estadistica)
 {
 	// Buscar el territorio por su código
 	// strcmp compara dos strings, si son iguales devuelve 0, si no son devuelve otro numero
@@ -288,6 +288,76 @@ int aumentar_estadistica(Territorio *cabeza, const char *codigo, char estadistic
 		}
 	}
 	return 0;
+}
+
+// Incrementa A/B/C del territorio dado; si esa estadística ya es 3, en lugar de subir otras del mismo territorio,
+// aumenta esa MISMA estadística en todos los territorios vecinos (según su lista de conexiones).
+void aumentar_estadistica_vecinos(Territorio *cabeza, const char *codigo, char estadistica)
+{
+	// localizar el territorio base por codigo (string de 2 chars)
+	Territorio *actual = cabeza;
+	while (strcmp(actual->codigo, codigo) != 0)
+	{
+		actual = actual->siguiente;
+	}
+
+	int *objetivo = NULL;
+
+	if (estadistica == 'A')
+	{
+		objetivo = &actual->A;
+	}
+	else if (estadistica == 'B')
+	{
+		objetivo = &actual->B;
+	}
+	else
+	{
+		objetivo = &actual->C;
+	}
+
+	// Si la estadística del territorio aún no está al máximo, simplemente súbela en el propio territorio
+	if (*objetivo < 3)
+	{
+		*objetivo = *objetivo + 1;
+		return;
+	}
+
+	// Si ya está en 3, propagar a todos los vecinos la misma estadística
+	for (int i = 0; i < actual->cantidad_conexiones; i++)
+	{
+		const char *codigoVecino = actual->conexiones[i];
+
+		// buscar vecino por codigo recorriendo la lista
+		Territorio *vec = cabeza;
+		while (strcmp(vec->codigo, codigoVecino) != 0)
+		{
+			vec = vec->siguiente;
+		}
+		int *dest = NULL;
+		if (estadistica == 'A')
+		{
+			dest = &vec->A;
+		}
+		else if (estadistica == 'B')
+		{
+			dest = &vec->B;
+		}
+		else
+		{
+			dest = &vec->C;
+		}
+		if (*dest < 3)
+		{
+			*dest = *dest + 1;
+			return;
+		}
+		if (comprobar_tres_todos(cabeza, estadistica) == 1)
+		{
+			return;
+		}
+		aumentar_estadistica_vecinos(cabeza, codigoVecino, estadistica);
+	}
 }
 
 void eliminarTerritorio(Territorio *cabeza, const char *codigo)
