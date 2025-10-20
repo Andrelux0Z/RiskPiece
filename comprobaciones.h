@@ -20,6 +20,9 @@ void comprobar_eliminar_territorio(Territorio **cabeza);
 // Versión segura que maneja jugadores correctamente
 void comprobar_eliminar_territorio_seguro(Territorio **cabeza, jugadorList *jugadores);
 
+// Versión para modo difícil que maneja jugadores y piratas
+void comprobar_eliminar_territorio_con_piratas(Territorio **cabeza, jugadorList *jugadores, pirataList *piratas);
+
 // Comprueba si una estadistica dada es 3 en todos los territorios
 int comprobar_tres_todos(Territorio *cabeza, char estadistica);
 
