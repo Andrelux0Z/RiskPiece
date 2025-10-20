@@ -187,32 +187,6 @@ void iniciar_modo_facil()
     // Crear hashmap de problematicas mediante una funcion dedicada
     hashmap *problematicas = crear_problematicas_facil(cabeza);
 
-    hashmap_insertar(problematicas, "P1", "Contaminacion y cambio climatico",
-                     "Reducir contaminacion equilibrando desarrollo y sostenibilidad; "
-                     "malas decisiones aumentan temperatura y causan desastres.",
-                     cabeza);
-
-    hashmap_insertar(problematicas, "P2", "Desigualdad social",
-                     "Gestionar recursos, empleo y educacion entre clases; "
-                     "malas decisiones aumentan pobreza y protestas o colapsan la economia.",
-                     cabeza);
-
-    hashmap_insertar(problematicas, "P3", "Corrupcion gubernamental",
-                     "Transparencia vs enriquecimiento ilicito; "
-                     "la corrupcion reduce inversion y genera caos social.",
-                     cabeza);
-
-    hashmap_insertar(problematicas, "P4", "Migracion y refugiados",
-                     "Decidir como integrar migrantes, administrar recursos y mantener orden; "
-                     "afecta economia, diversidad y estabilidad.",
-                     cabeza);
-
-    hashmap_insertar(problematicas, "P5", "Violencia y crimen organizado",
-                     "Contener bandas y crimen; invertir en educacion/empleo "
-                     "o usar fuerza con costo social.",
-                     cabeza);
-
-
     int turno = 1;
     while(comprobar_perder(cabeza) == 0 && comprobar_ganar(cabeza) == 0) {
         printf("\n=== TURNO %d ===\n", turno);
@@ -322,26 +296,6 @@ void iniciar_modo_dificil()
     mostrarJugadores(jugadores);
 
     hashmap *problematicas = crear_problematicas_facil(cabeza);
-
-    hashmap_insertar(problematicas, "P2", "Desigualdad social",
-                     "Gestionar recursos, empleo y educacion entre clases; "
-                     "malas decisiones aumentan pobreza y protestas o colapsan la economia.",
-                     cabeza);
-
-    hashmap_insertar(problematicas, "P3", "Corrupcion gubernamental",
-                     "Transparencia vs enriquecimiento ilicito; "
-                     "la corrupcion reduce inversion y genera caos social.",
-                     cabeza);
-
-    hashmap_insertar(problematicas, "P4", "Migracion y refugiados",
-                     "Decidir como integrar migrantes, administrar recursos y mantener orden; "
-                     "afecta economia, diversidad y estabilidad.",
-                     cabeza);
-
-    hashmap_insertar(problematicas, "P5", "Violencia y crimen organizado",
-                     "Contener bandas y crimen; invertir en educacion/empleo "
-                     "o usar fuerza con costo social.",
-                     cabeza);
 
     int turno = 1;
     while(comprobar_perder(cabeza) == 0 && comprobar_ganar(cabeza) == 0) {
