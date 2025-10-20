@@ -70,11 +70,15 @@ int aumentar_estadistica(Territorio *cabeza, const char *codigo, char estadistic
 // Funcion que permite aumentar la estadistica ABC de los vecinos de un territorio
 void aumentar_estadistica_vecinos(Territorio *cabeza, const char *codigo, char estadistica);
 
-// Función para eliminar un territorio de la lista por su código
-void eliminarTerritorio(Territorio *cabeza, const char *codigo);
+// Función para eliminar un territorio de la lista por su código (puede actualizar la cabeza)
+void eliminarTerritorio(Territorio **cabeza, const char *codigo);
 
 // Funcion usada para aumentar de forma random una estadistica random
 // despues de cada turno del jugador y la ONU.
 void seleccionar_territorio_estadistica_random(Territorio *cabeza);
+
+// Helper functions for safe territory deletion
+Territorio *encontrar_territorio_alternativo(Territorio *cabeza, const char *codigo_eliminado);
+void limpiar_conexiones_territorio(Territorio *cabeza, const char *codigo_eliminado);
 
 #endif

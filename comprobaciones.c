@@ -1,5 +1,7 @@
 #include <stdio.h>
+#include <string.h>
 #include "generacion_terreno.h"
+#include "jugadores.h"
 #include "comprobaciones.h"
 
 void ganar(void)
@@ -55,25 +57,68 @@ int comprobar_perder(Territorio *cabeza)
         cont++;
         if (cont > 3)
         {
-            return 1; // hay más de tres territorios
+            return 0; // hay más de tres territorios
         }
         actual = actual->siguiente;
     }
-    return 0; // tres o menos
+    return 1; // tres o menos
 }
 
+
 // Verifica si todas las estadisticas de un territorio son 3
-void comprobar_eliminar_territorio(Territorio *cabeza)
+void comprobar_eliminar_territorio_seguro(Territorio **cabeza, jugadorList *jugadores)
 {
-    Territorio *actual = cabeza;
-    while (actual != NULL)
+    if (!cabeza || !*cabeza) return;
+    
+    // Crear lista de territorios a eliminar
+    char territorios_a_eliminar[10][4];
+    int count = 0;
+    
+    // identificar territorios a eliminar
+    Territorio *actual = *cabeza;
+    while (actual != NULL && count < 10)
     {
-        Territorio *siguiente = actual->siguiente;
         if (actual->A == 3 && actual->B == 3 && actual->C == 3)
         {
-            eliminarTerritorio(cabeza, actual->codigo); // Eliminar territorio si ABC son 3
+            strncpy(territorios_a_eliminar[count], actual->codigo, 3);
+            territorios_a_eliminar[count][3] = '\0';
+            count++;
         }
-        actual = siguiente;
+        actual = actual->siguiente;
+    }
+    
+
+    // eliminar territorios
+    for (int i = 0; i < count; i++)
+    {
+        printf("\nALERTA! El territorio %s ha colapsado por problemas extremos.\n", territorios_a_eliminar[i]);
+        
+        // mover a los jugadores a otro territorio
+        if (jugadores && jugadores->inicio)
+        {
+            jugador *j = jugadores->inicio;
+            while (j != NULL)
+            {
+                if (j->ubicacion && j->ubicacion->codigo && 
+                    strcmp(j->ubicacion->codigo, territorios_a_eliminar[i]) == 0)
+                {
+                    // Mover al primer territorio disponible
+                    j->ubicacion = *cabeza;
+                    printf("%s tuvo que ser evacuado a %s (%s)\n", j->nombre, (*cabeza)->nombre, (*cabeza)->codigo);
+                }
+                j = j->sigt;
+            }
+        }
+        
+        //quitar conexiones de los territorios vecinos
+        limpiar_conexiones_territorio(*cabeza, territorios_a_eliminar[i]);
+        
+        eliminarTerritorio(cabeza, territorios_a_eliminar[i]);
+        // ver si lista no esté vacía
+        if (!*cabeza)
+        {
+            break;
+        }
     }
 }
 
@@ -97,4 +142,32 @@ int comprobar_tres_todos(Territorio *cabeza, char estadistica)
         actual = actual->siguiente;
     }
     return 1; // Si todos los territorios tienen 3 en la estadística dada, retorna 1
+}
+
+// Funcion para ver problemas de memoria
+void validar_integridad_lista(Territorio *cabeza, const char *contexto)
+{
+    if (!cabeza) {
+        return; // lista vacia
+    }
+    
+    int count = 0;
+    Territorio *actual = cabeza;
+    Territorio *anterior = NULL;
+    
+    while (actual != NULL && count < 20) // limite de seguridad
+    {
+        // verificar punteros
+        if (actual->anterior != anterior) { 
+            return; // puntero anterior inconsistente
+        }
+                
+        anterior = actual;
+        actual = actual->siguiente;
+        count++;
+    }
+    
+    if (count >= 20) {
+        return; // posible bucle infinito
+    }
 }

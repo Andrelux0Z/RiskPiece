@@ -213,21 +213,29 @@ void iniciar_modo_facil()
                      cabeza);
 
 
-    do{
-        ejecutar_primer_turno(jugadores, cabeza);
+    int turno = 1;
+    while(comprobar_perder(cabeza) == 0 && comprobar_ganar(cabeza) == 0) {
+        printf("\n=== TURNO %d ===\n", turno);
+        
+        ejecutar_turno(jugadores, cabeza);
         //Aumentar estadistica random en territorio random para simular el paso del tiempo
         seleccionar_territorio_estadistica_random(cabeza);
-        comprobar_eliminar_territorio(cabeza);
+        comprobar_eliminar_territorio_seguro(&cabeza, jugadores);
 
-        if(comprobar_perder(cabeza)==0 || comprobar_ganar(cabeza)==0)
+        if (comprobar_perder(cabeza) == 1 || comprobar_ganar(cabeza) == 1)
             break;
 
         ejecutar_turno_onu(jugadores, cabeza);
         //Aumentar estadistica random en territorio random para simular el paso del tiempo
         seleccionar_territorio_estadistica_random(cabeza);
-        comprobar_eliminar_territorio(cabeza);
+        comprobar_eliminar_territorio_seguro(&cabeza, jugadores);
+        
+        turno++;
+    }
 
-        }while(comprobar_perder(cabeza)==0 || comprobar_ganar(cabeza)==0);
+    if(comprobar_perder(cabeza) == 1) {
+        perder();
+    }
 
     printf("Presiona ENTER para volver al menu principal...");
     getchar();
@@ -340,21 +348,29 @@ void iniciar_modo_dificil()
                      "o usar fuerza con costo social.",
                      cabeza);
 
-    do{
-        ejecutar_primer_turno(jugadores, cabeza);
+    int turno = 1;
+    while(comprobar_perder(cabeza) == 0 && comprobar_ganar(cabeza) == 0) {
+        printf("\n=== TURNO %d ===\n", turno);
+        
+        ejecutar_turno(jugadores, cabeza);
         //Aumentar estadistica random en territorio random para simular el paso del tiempo
         seleccionar_territorio_estadistica_random(cabeza);
-        comprobar_eliminar_territorio(cabeza);
+        comprobar_eliminar_territorio_seguro(&cabeza, jugadores);
 
-        if(comprobar_perder(cabeza)==0 || comprobar_ganar(cabeza)==0)
+        if (comprobar_perder(cabeza) == 1 || comprobar_ganar(cabeza) == 1)
             break;
 
         ejecutar_turno_onu(jugadores, cabeza);
         //Aumentar estadistica random en territorio random para simular el paso del tiempo
         seleccionar_territorio_estadistica_random(cabeza);
-        comprobar_eliminar_territorio(cabeza);
+        comprobar_eliminar_territorio_seguro(&cabeza, jugadores);
+        
+        turno++;
+    }
 
-        }while(comprobar_perder(cabeza)==0 || comprobar_ganar(cabeza)==0);
+    if(comprobar_perder(cabeza) == 1) {
+        perder();
+    }
 
     // TODO: agregar logica extra para modo dificil (A;adir piratas y que estos afecten el juego)
     // TODO: seguir logica del juego (hacer problematicas mas complicadas, cosa de piratas)
@@ -366,6 +382,8 @@ void iniciar_modo_dificil()
     limpiar_buffer();
     getchar();
 
+    // Liberar memoria
+    liberarJugadores(jugadores);
     hashmap_eliminar(problematicas);
     liberar_lista(cabeza);
 }
