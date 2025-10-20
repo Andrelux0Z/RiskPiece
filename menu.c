@@ -184,8 +184,8 @@ void iniciar_modo_facil()
     // Mostrar informacion de los jugadores
     mostrarJugadores(jugadores);
 
-    // Crear hashmap de problematicas
-    hashmap *problematicas = hashmap_crear();
+    // Crear hashmap de problematicas mediante una funcion dedicada
+    hashmap *problematicas = crear_problematicas_facil(cabeza);
 
     hashmap_insertar(problematicas, "P1", "Contaminacion y cambio climatico",
                      "Reducir contaminacion equilibrando desarrollo y sostenibilidad; "
@@ -226,7 +226,7 @@ void iniciar_modo_facil()
             break;
 
         ejecutar_turno_onu(jugadores, cabeza);
-        //Aumentar estadistica random en territorio random para simular el paso del tiempo
+        // Aumentar estadistica random en territorio random para simular el paso del tiempo
         seleccionar_territorio_estadistica_random(cabeza);
         comprobar_eliminar_territorio_seguro(&cabeza, jugadores);
         
@@ -263,7 +263,7 @@ void iniciar_modo_dificil()
     printf("\nEstado inicial de los territorios:\n\n");
     imprimir_tabla(cabeza);
 
-        // Crear lista de jugadores directamente
+    // Crear lista de jugadores directamente
     jugadorList *jugadores = malloc(sizeof(jugadorList));
     if (!jugadores)
     {
@@ -321,12 +321,7 @@ void iniciar_modo_dificil()
     // Mostrar informacion de los jugadores
     mostrarJugadores(jugadores);
 
-    hashmap *problematicas = hashmap_crear();
-
-    hashmap_insertar(problematicas, "P1", "Contaminacion y cambio climatico",
-                     "Reducir contaminacion equilibrando desarrollo y sostenibilidad; "
-                     "malas decisiones aumentan temperatura y causan desastres.",
-                     cabeza);
+    hashmap *problematicas = crear_problematicas_facil(cabeza);
 
     hashmap_insertar(problematicas, "P2", "Desigualdad social",
                      "Gestionar recursos, empleo y educacion entre clases; "
@@ -361,7 +356,7 @@ void iniciar_modo_dificil()
             break;
 
         ejecutar_turno_onu(jugadores, cabeza);
-        //Aumentar estadistica random en territorio random para simular el paso del tiempo
+        // Aumentar estadistica random en territorio random para simular el paso del tiempo
         seleccionar_territorio_estadistica_random(cabeza);
         comprobar_eliminar_territorio_seguro(&cabeza, jugadores);
         
@@ -374,9 +369,6 @@ void iniciar_modo_dificil()
 
     // TODO: agregar logica extra para modo dificil (A;adir piratas y que estos afecten el juego)
     // TODO: seguir logica del juego (hacer problematicas mas complicadas, cosa de piratas)
-
-
-
 
     printf("Presiona ENTER para volver al menu principal...");
     limpiar_buffer();

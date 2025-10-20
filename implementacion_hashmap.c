@@ -277,3 +277,83 @@ Territorio *paises(char *primero, ...)
     va_end(ap);
     return cabeza;
 }
+
+/*
+ * Crea y precarga el hashmap de problematicas para el modo FACIL
+ */
+hashmap *crear_problematicas_facil(Territorio *cabeza)
+{
+    hashmap *problematicas = hashmap_crear();
+    if (!problematicas)
+        return NULL;
+
+    hashmap_insertar(problematicas, "P1", "Sequia masiva",
+                     "El pais de Alabasta ya es un lugar desierto, pero en los ultimos anos "
+                     "el agua escacea tanto que hay gente muriendo de sed.",
+                     cabeza);
+
+    hashmap_insertar(problematicas, "P2", "Olvido social",
+                     "Personas de todo el pais estan siendo borradas de la historia y "
+                     "todos sus registros son eliminados por el gobierno.",
+                     cabeza);
+
+    hashmap_insertar(problematicas, "P3", "Esclavitud",
+                     "Sistemas de explotacion laboral que privan de libertad y derechos basicos, "
+                     "trabajos pesados forzados en condiciones inhumanas.",
+                     cabeza);
+
+    hashmap_insertar(problematicas, "P4", "Agua contaminada",
+                     "El agua de todo el pais esta contaminada por quimicos toxicos "
+                     "provenientes de gigantescas fabricas industriales.",
+                     cabeza);
+
+    hashmap_insertar(problematicas, "P5", "Pirateria maritima",
+                     "Surgida inicialmente como una respuesta para proteger las aguas "
+                     "territoriales de la pesca ilegal, se convirtio en un lucrativo negocio criminal.",
+                     cabeza);
+
+    hashmap_insertar(problematicas, "P6", "Conflictos entre clanes",
+                     "Grupos organizados se pelean continuamente por controlar territorios, "
+                     "siembran la violencia y dificultan cualquier intento de paz y desarrollo.",
+                     cabeza);
+
+    hashmap_insertar(problematicas, "P7", "Vigilancia masiva",
+                     "Contener bandas y crimen; invertir en educacion/empleo "
+                     "o usar fuerza con costo social.",
+                     cabeza);
+
+    hashmap_insertar(problematicas, "P8", "Perdida de la Individualidad",
+                     "El objetivo del gobierno es crear una poblacion sumisa que ame al Gran Hermano y no cuestione nada. "
+                     "La policia del Pensamiento se encarga de castigar cualquier desviacion.",
+                     cabeza);
+
+    hashmap_insertar(problematicas, "P9", "Manipulacion linguistica",
+                     "La Neolengua busca reducir el lenguaje para eliminar pensamientos disidentes. "
+                     "Se elimina vocabulario que no apoye la ideologia del gobierno.",
+                     cabeza);
+
+    hashmap_insertar(problematicas, "P10", "Manipulacion mediante religion",
+                     "El gobierno utiliza la religion como una herramienta de control social. "
+                     "Se promueve una interpretacion de la fe que favorece al regimen.",
+                     cabeza);
+
+    hashmap_insertar(problematicas, "P11", "Pobreza",
+                     "Gran parte de la poblacion vive en condiciones precarias, sin acceso a "
+                     "recursos basicos como alimentacion, vivienda o educacion. "
+                     "La desigualdad economica aumenta cada ano.",
+                     cabeza);
+
+    hashmap_insertar(problematicas, "P12", "Mafias en el gobierno",
+                     "La corrupcion ha penetrado las instituciones del Estado. "
+                     "Funcionarios y lideres politicos colaboran con organizaciones criminales "
+                     "para enriquecerse y mantener el poder.",
+                     cabeza);
+
+    hashmap_insertar(problematicas, "P13", "Castigos brutales",
+                     "El sistema judicial aplica penas desproporcionadas y torturas "
+                     "como medio de control. Los disidentes y criminales son castigados "
+                     "publicamente para infundir miedo en la poblacion.",
+                     cabeza);
+
+    return problematicas;
+}

@@ -13,6 +13,7 @@
 /*
 * Funcion para subir las estadisticas de 3 paises random
 */
+/* Ya hay una funcion que cumple este proposito
 void subir_aleatorio_en_tres_paises(Territorio *cabeza)
 {
     int n = 0;
@@ -66,6 +67,7 @@ void subir_aleatorio_en_tres_paises(Territorio *cabeza)
         aumentar_estadistica(cabeza, t->codigo, est);
     }
 }
+*/
 
 /*
 * Funcion para mostrar el estado de los territorios en los que el jugador está posicionado
@@ -86,7 +88,7 @@ void mostrar_estado_territorio(Territorio *t)
 /*
 * Funcion que sirve para mostrar los paises vecinos.
 */
-void listar_vecinos(Territorio *t)
+void listar_vecinos(Territorio *t,Territorio *cabeza)
 {
     if (!t) {
         return;
@@ -95,7 +97,8 @@ void listar_vecinos(Territorio *t)
     printf("Vecinos disponibles:\n");
 
     for (int i = 0; i < t->cantidad_conexiones; i++) {
-        printf("  %d) %s\n", i + 1, t->conexiones[i]);
+        Territorio* vecino = buscarTerritorioPorCodigo(t->conexiones[i], cabeza); // Asegura que el código es válido
+        printf("  %d) %s\n", i + 1, vecino->nombre);
     }
 }
 
@@ -127,7 +130,7 @@ void ejecutar_turno(jugadorList *jugadores, Territorio *cabeza)
 
     while (acciones > 0) {
         printf("Acciones restantes: %d\n", acciones);
-        printf("Elige una accion:\n  1) Moverse a un pais vecino\n  2) Hacer proyecto (bajar A/B/C en 1)\n  3) Ver estado actual\n  4) Ver vecinos\nSeleccion: ");
+        printf("Elige una accion:\n  1) Moverse a un pais vecino\n  2) Hacer proyecto (bajar A/B/C en 1)\n  3) Ver estado actual\n  4) Ver vecinos\n  5) Ver Tabla General\nSeleccion: ");
 
         int op = 0;
 
@@ -149,7 +152,7 @@ void ejecutar_turno(jugadorList *jugadores, Territorio *cabeza)
         switch (op) {
             case 1:
             {
-                listar_vecinos(j1->ubicacion);
+                listar_vecinos(j1->ubicacion,cabeza);
                 printf("Ingresa el numero del vecino (1-%d): ", j1->ubicacion->cantidad_conexiones);
 
                 int choice = 0;
@@ -192,7 +195,9 @@ void ejecutar_turno(jugadorList *jugadores, Territorio *cabeza)
             }
             case 2:
             {
-                printf("Elige que problema bajar (A/B/C): ");
+                printf("Elige que problema bajar (A/B/C): \n");
+                printf("Elige que descripcion deseas ver (1/2/3 respectivamente): \n");
+                printf("O cualquier otra tecla para cancelar.\n");
 
                 int ch = getchar();
 
@@ -216,6 +221,11 @@ void ejecutar_turno(jugadorList *jugadores, Territorio *cabeza)
                     case 'c':
                         valido = 1;
                         break;
+                    case 1:
+                    case 2:
+                    case 3:
+                        //TODO HASHMAP PARA DESCRIPCIONES
+
                     default:
                         valido = 0;
                         break;
@@ -256,7 +266,13 @@ void ejecutar_turno(jugadorList *jugadores, Territorio *cabeza)
             }
             case 4:
             {
-                listar_vecinos(j1->ubicacion);
+                listar_vecinos(j1->ubicacion,cabeza);
+                printf("\n");
+                break;
+            }
+            case 5:
+            {
+                imprimir_tabla(cabeza);
                 printf("\n");
                 break;
             }
@@ -275,7 +291,7 @@ void ejecutar_turno(jugadorList *jugadores, Territorio *cabeza)
            j1->ubicacion->B,
            j1->ubicacion->C);
 
-    subir_aleatorio_en_tres_paises(cabeza);
+    seleccionar_territorio_estadistica_random(cabeza);
 
     printf("\nCambios globales tras el turno del jugador:\n\n");
     imprimir_tabla(cabeza);
@@ -438,7 +454,7 @@ void ejecutar_turno_onu(jugadorList *jugadores, Territorio *cabeza)
            onu->ubicacion->B,
            onu->ubicacion->C);
 
-    subir_aleatorio_en_tres_paises(cabeza);
+    seleccionar_territorio_estadistica_random(cabeza);
 
     printf("\nCambios globales tras el turno de la ONU:\n\n");
     imprimir_tabla(cabeza);

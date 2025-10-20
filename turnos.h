@@ -12,7 +12,7 @@ void mostrar_estado_territorio(Territorio *t);
 /*
 * Funcion que sirve para mostrar los paises vecinos.
 */
-void listar_vecinos(Territorio *t);
+void listar_vecinos(Territorio *t,Territorio *cabeza);
 
 /*
 * Esta funcion funciona para hacer el turno del usuario, compila varias funciones
