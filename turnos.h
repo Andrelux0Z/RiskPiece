@@ -21,7 +21,11 @@ void listar_vecinos(Territorio *t);
 */
 void ejecutar_primer_turno(jugadorList *jugadores, Territorio *cabeza);
 
-
+/*
+* Esta funcion funciona para hacer el turno de la computadora (la ONU)
+* para hacer que todo funcione (dice primera porque así se implemento inicialmente
+* luego nos dimos cuenta del error pero no cambiamos las cosas jaja)
+*/
 void ejecutar_turno_onu(jugadorList *jugadores, Territorio *cabeza);
 
 #endif
