@@ -25,7 +25,9 @@ hashmap *hashmap_crear(void)
     if (!mapa)
         return NULL;
     mapa->length = 0;
-    mapa->capacidad = 10; // se puede cambiar si crecen las problematicas
+    // Capacidad inicial: debe ser mayor al numero de problematicas (actualmente 16)
+    // Para evitar colisiones excesivas y fallos por mapa lleno, usamos 32
+    mapa->capacidad = 32;
 
     mapa->nodos = (nodo *)calloc(mapa->capacidad, sizeof(nodo));
     if (!mapa->nodos)
@@ -332,27 +334,42 @@ hashmap *crear_problematicas_facil(Territorio *cabeza)
                      "Se elimina vocabulario que no apoye la ideologia del gobierno.",
                      cabeza);
 
-    hashmap_insertar(problematicas, "P10", "Manipulacion mediante religion",
+    hashmap_insertar(problematicas, "10", "Manipulacion mediante religion",
                      "El gobierno utiliza la religion como una herramienta de control social. "
                      "Se promueve una interpretacion de la fe que favorece al regimen.",
                      cabeza);
 
-    hashmap_insertar(problematicas, "P11", "Pobreza",
+    hashmap_insertar(problematicas, "11", "Pobreza",
                      "Gran parte de la poblacion vive en condiciones precarias, sin acceso a "
                      "recursos basicos como alimentacion, vivienda o educacion. "
                      "La desigualdad economica aumenta cada ano.",
                      cabeza);
 
-    hashmap_insertar(problematicas, "P12", "Mafias en el gobierno",
+    hashmap_insertar(problematicas, "12", "Mafias en el gobierno",
                      "La corrupcion ha penetrado las instituciones del Estado. "
                      "Funcionarios y lideres politicos colaboran con organizaciones criminales "
                      "para enriquecerse y mantener el poder.",
                      cabeza);
 
-    hashmap_insertar(problematicas, "P13", "Castigos brutales",
+    hashmap_insertar(problematicas, "13", "Castigos brutales",
                      "El sistema judicial aplica penas desproporcionadas y torturas "
                      "como medio de control. Los disidentes y criminales son castigados "
                      "publicamente para infundir miedo en la poblacion.",
+                     cabeza);
+    hashmap_insertar(problematicas, "14", "Abuso de drogas",
+                     "El consumo de sustancias ilegales se ha incrementado drasticamente, "
+                     "afectando especialmente a los jovenes. La falta de programas de prevencion "
+                     "y rehabilitacion agrava el problema.",
+                     cabeza);
+
+    hashmap_insertar(problematicas, "15", "Trafico de personas",
+                     "Redes criminales capturan y venden personas para explotacion laboral o sexual. "
+                     "Las victimas son en su mayoria mujeres y ninos provenientes de zonas pobres.",
+                     cabeza);
+    hashmap_insertar(problematicas, "16", "Experimentacion con humanos",
+                     "Instituciones cientificas y militares realizan pruebas secretas en personas "
+                     "sin su consentimiento. Los experimentos causan graves danos fisicos y mentales "
+                     "a las victimas.",
                      cabeza);
 
     return problematicas;

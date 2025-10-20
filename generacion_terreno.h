@@ -10,6 +10,7 @@ typedef struct Territorio
     char codigo[3];
     char nombre[32];
     char conexiones[4][3];
+    char problematicas[4][3];
     int cantidad_conexiones;
     int A;
     int B;
@@ -27,7 +28,7 @@ int limitar_a_rango_0_a_3(int valor);
  * nombre, conexiones (y su cantidad) y los valores de los 3 problemas.
  * Retorna el territorio.
  */
-Territorio *crear_territorio(const char *codigo, const char *nombre, const char conexiones[][3], int cantidad_conexiones, int A, int B, int C);
+Territorio *crear_territorio(const char *codigo, const char *nombre, const char conexiones[][3], const char problematicas[][3], int cantidad_conexiones, int A, int B, int C);
 
 /*
  * Funcion para agregar un territorio (nodo) creado con crear_territorio
