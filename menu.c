@@ -182,50 +182,25 @@ void iniciar_modo_facil()
     // Mostrar informacion de los jugadores
     mostrarJugadores(jugadores);
 
-    // Crear hashmap de problematicas
-    hashmap *problematicas = hashmap_crear();
+    // Crear hashmap de problematicas mediante una funcion dedicada
+    hashmap *problematicas = crear_problematicas_facil(cabeza);
 
-    hashmap_insertar(problematicas, "P1", "Contaminacion y cambio climatico",
-                     "Reducir contaminacion equilibrando desarrollo y sostenibilidad; "
-                     "malas decisiones aumentan temperatura y causan desastres.",
-                     cabeza);
-
-    hashmap_insertar(problematicas, "P2", "Desigualdad social",
-                     "Gestionar recursos, empleo y educacion entre clases; "
-                     "malas decisiones aumentan pobreza y protestas o colapsan la economia.",
-                     cabeza);
-
-    hashmap_insertar(problematicas, "P3", "Corrupcion gubernamental",
-                     "Transparencia vs enriquecimiento ilicito; "
-                     "la corrupcion reduce inversion y genera caos social.",
-                     cabeza);
-
-    hashmap_insertar(problematicas, "P4", "Migracion y refugiados",
-                     "Decidir como integrar migrantes, administrar recursos y mantener orden; "
-                     "afecta economia, diversidad y estabilidad.",
-                     cabeza);
-
-    hashmap_insertar(problematicas, "P5", "Violencia y crimen organizado",
-                     "Contener bandas y crimen; invertir en educacion/empleo "
-                     "o usar fuerza con costo social.",
-                     cabeza);
-
-
-    do{
+    do
+    {
         ejecutar_primer_turno(jugadores, cabeza);
-        //Aumentar estadistica random en territorio random para simular el paso del tiempo
+        // Aumentar estadistica random en territorio random para simular el paso del tiempo
         seleccionar_territorio_estadistica_random(cabeza);
         comprobar_eliminar_territorio(cabeza);
 
-        if(comprobar_perder(cabeza)==0 || comprobar_ganar(cabeza)==0)
+        if (comprobar_perder(cabeza) == 0 || comprobar_ganar(cabeza) == 0)
             break;
 
         ejecutar_turno_onu(jugadores, cabeza);
-        //Aumentar estadistica random en territorio random para simular el paso del tiempo
+        // Aumentar estadistica random en territorio random para simular el paso del tiempo
         seleccionar_territorio_estadistica_random(cabeza);
         comprobar_eliminar_territorio(cabeza);
 
-        }while(comprobar_perder(cabeza)==0 || comprobar_ganar(cabeza)==0);
+    } while (comprobar_perder(cabeza) == 0 || comprobar_ganar(cabeza) == 0);
 
     printf("Presiona ENTER para volver al menu principal...");
     getchar();
@@ -253,7 +228,7 @@ void iniciar_modo_dificil()
     printf("\nEstado inicial de los territorios:\n\n");
     imprimir_tabla(cabeza);
 
-        // Crear lista de jugadores directamente
+    // Crear lista de jugadores directamente
     jugadorList *jugadores = malloc(sizeof(jugadorList));
     if (!jugadores)
     {
@@ -311,54 +286,27 @@ void iniciar_modo_dificil()
     // Mostrar informacion de los jugadores
     mostrarJugadores(jugadores);
 
-    hashmap *problematicas = hashmap_crear();
+    hashmap *problematicas = crear_problematicas_facil(cabeza);
 
-    hashmap_insertar(problematicas, "P1", "Contaminacion y cambio climatico",
-                     "Reducir contaminacion equilibrando desarrollo y sostenibilidad; "
-                     "malas decisiones aumentan temperatura y causan desastres.",
-                     cabeza);
-
-    hashmap_insertar(problematicas, "P2", "Desigualdad social",
-                     "Gestionar recursos, empleo y educacion entre clases; "
-                     "malas decisiones aumentan pobreza y protestas o colapsan la economia.",
-                     cabeza);
-
-    hashmap_insertar(problematicas, "P3", "Corrupcion gubernamental",
-                     "Transparencia vs enriquecimiento ilicito; "
-                     "la corrupcion reduce inversion y genera caos social.",
-                     cabeza);
-
-    hashmap_insertar(problematicas, "P4", "Migracion y refugiados",
-                     "Decidir como integrar migrantes, administrar recursos y mantener orden; "
-                     "afecta economia, diversidad y estabilidad.",
-                     cabeza);
-
-    hashmap_insertar(problematicas, "P5", "Violencia y crimen organizado",
-                     "Contener bandas y crimen; invertir en educacion/empleo "
-                     "o usar fuerza con costo social.",
-                     cabeza);
-
-    do{
+    do
+    {
         ejecutar_primer_turno(jugadores, cabeza);
-        //Aumentar estadistica random en territorio random para simular el paso del tiempo
+        // Aumentar estadistica random en territorio random para simular el paso del tiempo
         seleccionar_territorio_estadistica_random(cabeza);
         comprobar_eliminar_territorio(cabeza);
 
-        if(comprobar_perder(cabeza)==0 || comprobar_ganar(cabeza)==0)
+        if (comprobar_perder(cabeza) == 0 || comprobar_ganar(cabeza) == 0)
             break;
 
         ejecutar_turno_onu(jugadores, cabeza);
-        //Aumentar estadistica random en territorio random para simular el paso del tiempo
+        // Aumentar estadistica random en territorio random para simular el paso del tiempo
         seleccionar_territorio_estadistica_random(cabeza);
         comprobar_eliminar_territorio(cabeza);
 
-        }while(comprobar_perder(cabeza)==0 || comprobar_ganar(cabeza)==0);
+    } while (comprobar_perder(cabeza) == 0 || comprobar_ganar(cabeza) == 0);
 
     // TODO: agregar logica extra para modo dificil (A;adir piratas y que estos afecten el juego)
     // TODO: seguir logica del juego (hacer problematicas mas complicadas, cosa de piratas)
-
-
-
 
     printf("Presiona ENTER para volver al menu principal...");
     limpiar_buffer();
