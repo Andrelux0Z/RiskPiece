@@ -28,6 +28,19 @@ Territorio* buscarTerritorioPorCodigo(const char* codigo, Territorio* cabeza) {
     return NULL;
 }
 
+Territorio* buscarTerritorioPorNumero(int codigoNum, Territorio* cabeza) {
+    Territorio* actual = cabeza;
+    char codigo = (char)codigoNum;
+
+    while (actual != NULL) {
+        if (strcmp(actual->codigo[1], codigo) == 0) {
+            return actual;
+        }
+        actual = actual->siguiente;
+    }
+    return NULL;
+}
+
 
 // Funcion para agregar un jugador a la lista
 void agregarJugador(jugadorList* lista, Territorio* ubicacion, char* nombre) {

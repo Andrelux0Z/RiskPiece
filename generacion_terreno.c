@@ -1,5 +1,6 @@
 #include "generacion_terreno.h"
 #include "implementacion_hashmap.h"
+#include "jugadores.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -290,44 +291,9 @@ int aumentar_estadistica_dificil(Territorio *cabeza, const char *codigo, char es
 	return 0;
 }
 
-//Funcion que aumenta la estadistica A/B/C de un territorio, si esta ya es 3, llama a la funcion que aumenta la estadistica de los vecinos
-void aumentar_estadistica(Territorio *cabeza, const char *codigo,char estadistica){
-
-	Territorio *actual = cabeza;
-	while (actual){
-		if (strcmp(actual->codigo, codigo) == 0){ // strcmp retorna 0 si se encuentra el codigo
-
-			//Si estadistica == 'A'
-			if(estadistica == 'A'){
-				if(actual->A < 3){
-					actual->A += 1;
-				}else
-					aumentar_estadistica_vecinos(cabeza,codigo,estadistica);
-			}
-
-			//Si estadistica == 'B'
-			else if(estadistica == 'B'){
-				if(actual->B < 3){
-					actual->B += 1;
-				}else
-					aumentar_estadistica_vecinos(cabeza,codigo,estadistica);
-			
-			//Si estadistica == 'C'
-			}else{
-				if(actual->C < 3)
-					actual->C += 1;
-			}
-
-		//Si no se encuentra el codigo, seguir buscando
-		actual = actual->siguiente;
-		}
-	}
-}
-
-
 // Incrementa A/B/C del territorio dado; si esa estadística ya es 3, en lugar de subir otras del mismo territorio,
 // aumenta esa MISMA estadística en todos los territorios vecinos (según su lista de conexiones).
-void aumentar_estadistica_vecinos(Territorio *cabeza, const char *codigo, char estadistica)
+void aumentar_estadistica_vecinos(Territorio *cabeza, char *codigo, char estadistica)
 {
 	// localizar el territorio base por codigo (string de 2 chars)
 	Territorio *actual = cabeza;
@@ -395,7 +361,7 @@ void aumentar_estadistica_vecinos(Territorio *cabeza, const char *codigo, char e
 	}
 }
 
-void eliminarTerritorio(Territorio *cabeza, const char *codigo)
+void eliminarTerritorio(Territorio *cabeza, char *codigo)
 {
 	Territorio *actual = cabeza;
 	while (actual)
@@ -422,16 +388,31 @@ void eliminarTerritorio(Territorio *cabeza, const char *codigo)
 	}
 }
 
+//Funcion usada en menu que permite seleccionar un territorio y estadistica random,
+//realiza su respectiva conversion y llama a la funcion aumentar_estadistica
+void seleccionar_territorio_estadistica_random(Territorio *cabeza){
+	for(int i=0; i<3; i++){
+        
+        int codigoRandom = rand() % 10 + 1;
+        int estadisticaRandom = rand() % 3; // 0=A, 1=B, 2=C
+
+		while(1){
+			Territorio* actual = buscarTerritorioPorNumero(codigoRandom, cabeza);
+			if(actual != NULL){
+				if(estadisticaRandom == 0){
+					aumentar_estadistica_vecinos(cabeza, actual->codigo, 'A');
+
+				}else if(estadisticaRandom == 1){
+					aumentar_estadistica_vecinos(cabeza, actual->codigo, 'B');
+
+				}else{
+					aumentar_estadistica_vecinos(cabeza, actual->codigo, 'C');
+				}
+				break; //Si el territorio fue encontrado, si no, se repite el proceso
+				}
+			}
+    }
+
+}
 
 
-
-
-
-
-
-
-//Aumenta la estadistica de los paises vecinos si un pais llega a tener una estadistica en 3
-//void aumentar_estadistica_vecinos(){}
-
-//Verificar si los paises tienen en 3 la misma poblematica, para evitar un bucle que aumente indefinidamente a los vecinos
-//int verificar_bucle_problematicas(Territorio *cabeza,char estadistica){} 0 si no hay bucle, 1 si hay bucle

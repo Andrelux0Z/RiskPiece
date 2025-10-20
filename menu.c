@@ -3,6 +3,7 @@
 #include "generacion_terreno.h"
 #include "jugadores.h"
 #include "turnos.h"
+#include "comprobaciones.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -137,7 +138,7 @@ void iniciar_modo_facil()
     char nombreJugador[32];
     printf("\n>> CONFIGURACION DE JUGADORES\n");
     printf("--------------------------------------------------------------\n");
-    printf("Ingresa tu nombre (max 31 caracteres): ");
+    printf("Ingresa el nombre del grupo anarquista al que perteneces (max 31 caracteres): ");
     fgets(nombreJugador, sizeof(nombreJugador), stdin);
 
     // Eliminar el salto de linea del fgets
@@ -209,11 +210,22 @@ void iniciar_modo_facil()
                      "o usar fuerza con costo social.",
                      cabeza);
 
-    // Primer turno del jugador 1
-    ejecutar_primer_turno(jugadores, cabeza);
 
-    // Luego juega la ONU con decisiones aleatorias visibles
-    ejecutar_turno_onu(jugadores, cabeza);
+    do{
+        ejecutar_primer_turno(jugadores, cabeza);
+        //Aumentar estadistica random en territorio random para simular el paso del tiempo
+        seleccionar_territorio_estadistica_random(cabeza);
+        comprobar_eliminar_territorio(cabeza);
+
+        if(comprobar_perder(cabeza)==0 || comprobar_ganar(cabeza)==0)
+            break;
+
+        ejecutar_turno_onu(jugadores, cabeza);
+        //Aumentar estadistica random en territorio random para simular el paso del tiempo
+        seleccionar_territorio_estadistica_random(cabeza);
+        comprobar_eliminar_territorio(cabeza);
+
+        }while(comprobar_perder(cabeza)==0 || comprobar_ganar(cabeza)==0);
 
     printf("Presiona ENTER para volver al menu principal...");
     getchar();
@@ -240,6 +252,64 @@ void iniciar_modo_dificil()
 
     printf("\nEstado inicial de los territorios:\n\n");
     imprimir_tabla(cabeza);
+
+        // Crear lista de jugadores directamente
+    jugadorList *jugadores = malloc(sizeof(jugadorList));
+    if (!jugadores)
+    {
+        printf("Error: memoria insuficiente\n");
+        return;
+    }
+    jugadores->inicio = NULL;
+    jugadores->final = NULL;
+
+    // Pedir nombre del jugador
+    char nombreJugador[32];
+    printf("\n>> CONFIGURACION DE JUGADORES\n");
+    printf("--------------------------------------------------------------\n");
+    printf("Ingresa el nombre del grupo anarquista al que perteneces (max 31 caracteres): ");
+    fgets(nombreJugador, sizeof(nombreJugador), stdin);
+
+    // Eliminar el salto de linea del fgets
+    size_t len = strlen(nombreJugador);
+    if (len > 0 && nombreJugador[len - 1] == '\n')
+    {
+        nombreJugador[len - 1] = '\0';
+    }
+
+    // Si el nombre esta vacio, asignar un nombre por defecto
+    if (strlen(nombreJugador) == 0)
+    {
+        strcpy(nombreJugador, "Jugador");
+    }
+
+    // Asignar territorio aleatorio al jugador
+    int territorioAleatorio = rand() % 10 + 1;
+    char codigoTerritorio[3];
+    sprintf(codigoTerritorio, "%02d", territorioAleatorio);
+
+    Territorio *ubicacionJugador = buscarTerritorioPorCodigo(codigoTerritorio, cabeza);
+    if (ubicacionJugador != NULL)
+    {
+        agregarJugador(jugadores, ubicacionJugador, nombreJugador);
+    }
+
+    // Crear jugador 2 automatico: ONU en un territorio distinto
+    int territorioONU;
+    Territorio *ubicacionONU = NULL;
+    do
+    {
+        territorioONU = rand() % 10 + 1;
+        char codigoONU[3];
+        sprintf(codigoONU, "%02d", territorioONU);
+        ubicacionONU = buscarTerritorioPorCodigo(codigoONU, cabeza);
+    } while (ubicacionONU == NULL || (ubicacionJugador != NULL && strcmp(ubicacionONU->codigo, ubicacionJugador->codigo) == 0));
+
+    // Nombre fijo "ONU"
+    agregarJugador(jugadores, ubicacionONU, "ONU");
+
+    // Mostrar informacion de los jugadores
+    mostrarJugadores(jugadores);
 
     hashmap *problematicas = hashmap_crear();
 
@@ -268,7 +338,27 @@ void iniciar_modo_dificil()
                      "o usar fuerza con costo social.",
                      cabeza);
 
+    do{
+        ejecutar_primer_turno(jugadores, cabeza);
+        //Aumentar estadistica random en territorio random para simular el paso del tiempo
+        seleccionar_territorio_estadistica_random(cabeza);
+        comprobar_eliminar_territorio(cabeza);
+
+        if(comprobar_perder(cabeza)==0 || comprobar_ganar(cabeza)==0)
+            break;
+
+        ejecutar_turno_onu(jugadores, cabeza);
+        //Aumentar estadistica random en territorio random para simular el paso del tiempo
+        seleccionar_territorio_estadistica_random(cabeza);
+        comprobar_eliminar_territorio(cabeza);
+
+        }while(comprobar_perder(cabeza)==0 || comprobar_ganar(cabeza)==0);
+
+    // TODO: agregar logica extra para modo dificil (A;adir piratas y que estos afecten el juego)
     // TODO: seguir logica del juego (hacer problematicas mas complicadas, cosa de piratas)
+
+
+
 
     printf("Presiona ENTER para volver al menu principal...");
     limpiar_buffer();

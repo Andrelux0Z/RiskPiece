@@ -13,4 +13,10 @@ int comprobar_ganar(Territorio *cabeza);
 // Retorna 1 si se pierde
 int comprobar_perder(Territorio *cabeza);
 
+//Revisa si un territorio debe ser eliminado (todas sus estadisticas en 3)
+void comprobar_eliminar_territorio(Territorio *cabeza);
+
+//Comrueba si una estadistica dada es 3 en todos los territorios
+int comprobar_tres_todos(Territorio *cabeza, char estadistica);
+
 #endif

@@ -31,6 +31,7 @@ typedef struct jugadorList {
 
 // Function declarations for jugadores.c
 Territorio* buscarTerritorioPorCodigo(const char* codigo, Territorio* cabeza);
+Territorio* buscarTerritorioPorNumero(int codigo, Territorio* cabeza);
 void agregarJugador(jugadorList* lista, Territorio* ubicacion, char* nombre);
 void mostrarJugadores(jugadorList* lista);
 void liberarJugadores(jugadorList* lista);
