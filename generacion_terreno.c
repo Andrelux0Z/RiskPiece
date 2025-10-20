@@ -33,7 +33,7 @@ int limitar_a_rango_0_a_3(int valor)
  * nombre, conexiones (y su cantidad) y los valores de los 3 problemas.
  * Retorna el territorio.
  */
-Territorio *crear_territorio(const char *codigo, const char *nombre, const char conexiones[][3], int cantidad_conexiones, int A, int B, int C)
+Territorio *crear_territorio(const char *codigo, const char *nombre, const char conexiones[][3], const char problematicas[][3], int cantidad_conexiones, int A, int B, int C)
 {
 	// Reserva memoria para el nuevo nodo y valida el resultado.
 	Territorio *t = (Territorio *)malloc(sizeof(Territorio));
@@ -62,6 +62,16 @@ Territorio *crear_territorio(const char *codigo, const char *nombre, const char 
 	{
 		t->conexiones[i][0] = '\0';
 	}
+
+	// Copiar las claves de problematicas (A,B,C) al territorio
+	for (int i = 0; i < 3; i++)
+	{
+		// cada key es de max 2 chars + nul
+		strncpy(t->problematicas[i], problematicas[i], sizeof(t->problematicas[i]) - 1);
+		t->problematicas[i][sizeof(t->problematicas[i]) - 1] = '\0';
+	}
+	// limpiar la cuarta posicion por si se usa en algun momento
+	t->problematicas[3][0] = '\0';
 
 	// Limita las estadísticas de 0 a 3.
 	t->A = limitar_a_rango_0_a_3(A);
@@ -237,10 +247,6 @@ Territorio *construir_lista_ejemplo(void)
 {
 	Territorio *cabeza = NULL;
 
-	// Conexiones balanceadas (9 nodos):
-	// Ciclo: 01-02-03-04-05-06-07-08-09-01
-	// Extras: (01-04), (03-06), (07-09)
-	// Grados: 01(3),02(2),03(3),04(3),05(2),06(3),07(3),08(2),09(3)
 	const char c01[][3] = {"02", "09", "04"};
 	const char c02[][3] = {"01", "03"};
 	const char c03[][3] = {"02", "04", "06"};
@@ -251,15 +257,25 @@ Territorio *construir_lista_ejemplo(void)
 	const char c08[][3] = {"07", "09"};
 	const char c09[][3] = {"08", "01", "07"};
 
-	agregar_territorio(&cabeza, crear_territorio("01", "Dressrosa", c01, 3, 0, 0, 0));
-	agregar_territorio(&cabeza, crear_territorio("02", "Wano", c02, 2, 0, 0, 0));
-	agregar_territorio(&cabeza, crear_territorio("03", "Punk Hazard", c03, 3, 0, 0, 0));
-	agregar_territorio(&cabeza, crear_territorio("04", "Alabasta", c04, 3, 0, 0, 0));
-	agregar_territorio(&cabeza, crear_territorio("05", "Pisos Picados", c05, 2, 0, 0, 0));
-	agregar_territorio(&cabeza, crear_territorio("06", "Skypea", c06, 3, 0, 0, 0));
-	agregar_territorio(&cabeza, crear_territorio("07", "Somalia", c07, 3, 0, 0, 0));
-	agregar_territorio(&cabeza, crear_territorio("08", "Ba Sing Se", c08, 2, 0, 0, 0));
-	agregar_territorio(&cabeza, crear_territorio("09", "Pharloom", c09, 3, 0, 0, 0));
+	const char p01[][3] = {"P2", "P3", "12"};
+	const char p02[][3] = {"P4", "11", "13"};
+	const char p03[][3] = {"14", "15", "16"};
+	const char p04[][3] = {"P1", "12", "P6"};
+	const char p05[][3] = {"13", "P6", "15"};
+	const char p06[][3] = {"P7", "13", "10"};
+	const char p07[][3] = {"P5", "P6", "11"};
+	const char p08[][3] = {"P7", "P8", "P9"};
+	const char p09[][3] = {"10", "P4", "P7"};
+
+	agregar_territorio(&cabeza, crear_territorio("01", "Dressrosa", c01, p01, 3, 0, 0, 0));
+	agregar_territorio(&cabeza, crear_territorio("02", "Wano", c02, p02, 2, 0, 0, 0));
+	agregar_territorio(&cabeza, crear_territorio("03", "Punk Hazard", c03, p03, 3, 0, 0, 0));
+	agregar_territorio(&cabeza, crear_territorio("04", "Alabasta", c04, p04, 3, 0, 0, 0));
+	agregar_territorio(&cabeza, crear_territorio("05", "Pisos Picados", c05, p05, 2, 0, 0, 0));
+	agregar_territorio(&cabeza, crear_territorio("06", "Skypea", c06, p06, 3, 0, 0, 0));
+	agregar_territorio(&cabeza, crear_territorio("07", "Somalia", c07, p07, 3, 0, 0, 0));
+	agregar_territorio(&cabeza, crear_territorio("08", "Oceania", c08, p08, 2, 0, 0, 0));
+	agregar_territorio(&cabeza, crear_territorio("09", "Pharloom", c09, p09, 3, 0, 0, 0));
 
 	return cabeza;
 }
@@ -394,7 +410,8 @@ void aumentar_estadistica_vecinos(Territorio *cabeza, const char *codigo, char e
 
 void eliminarTerritorio(Territorio **cabeza, const char *codigo)
 {
-	if (!cabeza || !*cabeza) return;
+	if (!cabeza || !*cabeza)
+		return;
 	Territorio *actual = *cabeza;
 	while (actual)
 	{
@@ -430,30 +447,34 @@ void eliminarTerritorio(Territorio **cabeza, const char *codigo)
 // realiza su respectiva conversion y llama a la funcion aumentar_estadistica
 void seleccionar_territorio_estadistica_random(Territorio *cabeza)
 {
-	if (!cabeza) return;
-	
+	if (!cabeza)
+		return;
+
 	// Contar territorios disponibles
 	int total_territorios = 0;
 	Territorio *temp = cabeza;
-	while (temp != NULL) {
+	while (temp != NULL)
+	{
 		total_territorios++;
 		temp = temp->siguiente;
 	}
-	
-	if (total_territorios == 0) return;
-	
+
+	if (total_territorios == 0)
+		return;
+
 	for (int i = 0; i < 3; i++)
 	{
-		int estadisticaRandom = rand() % 3;	 // 0=A, 1=B, 2=C
-		
+		int estadisticaRandom = rand() % 3; // 0=A, 1=B, 2=C
+
 		// Seleccionar territorio aleatorio de los disponibles
 		int indice_random = rand() % total_territorios;
 		Territorio *actual = cabeza;
-		
-		for (int j = 0; j < indice_random && actual != NULL; j++) {
+
+		for (int j = 0; j < indice_random && actual != NULL; j++)
+		{
 			actual = actual->siguiente;
 		}
-		
+
 		if (actual != NULL && actual->codigo)
 		{
 			if (estadisticaRandom == 0)
@@ -475,11 +496,12 @@ void seleccionar_territorio_estadistica_random(Territorio *cabeza)
 // Funcion para encontrar un territorio alternativo para los jugadores cuando se elimina un territorio (y no queden perdidos)
 Territorio *encontrar_territorio_alternativo(Territorio *cabeza, const char *codigo_eliminado)
 {
-	if (!cabeza) return NULL;
-	
+	if (!cabeza)
+		return NULL;
+
 	Territorio *actual = cabeza;
 	Territorio *alternativa = NULL;
-	
+
 	// Buscar el primer territorio que no sea el que se va a eliminar
 	while (actual != NULL)
 	{
@@ -490,21 +512,22 @@ Territorio *encontrar_territorio_alternativo(Territorio *cabeza, const char *cod
 		}
 		actual = actual->siguiente;
 	}
-	
+
 	// Si no se encontró alternativa, usar la cabeza (último recurso)
 	if (!alternativa && cabeza)
 	{
 		alternativa = cabeza;
 	}
-	
+
 	return alternativa;
 }
 
 // Funcion para quitar las conexiones de los territorios vecinos cuando se elimina un territorio
 void limpiar_conexiones_territorio(Territorio *cabeza, const char *codigo_eliminado)
 {
-	if (!cabeza || !codigo_eliminado) return;
-	
+	if (!cabeza || !codigo_eliminado)
+		return;
+
 	Territorio *actual = cabeza;
 	while (actual != NULL)
 	{

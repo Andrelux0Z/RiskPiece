@@ -1,4 +1,4 @@
-//prueba
+// prueba
 
 #include "menu.h"
 #include "implementacion_hashmap.h"
@@ -259,11 +259,12 @@ void iniciar_modo_facil()
     hashmap *problematicas = crear_problematicas_facil(cabeza);
 
     int turno = 1;
-    while(comprobar_perder(cabeza) == 0 && comprobar_ganar(cabeza) == 0) {
+    while (comprobar_perder(cabeza) == 0 && comprobar_ganar(cabeza) == 0)
+    {
         printf("\n=== TURNO %d ===\n", turno);
-        
+
         ejecutar_turno(jugadores, cabeza);
-        //Aumentar estadistica random en territorio random para simular el paso del tiempo
+        // Aumentar estadistica random en territorio random para simular el paso del tiempo
         seleccionar_territorio_estadistica_random(cabeza);
         comprobar_eliminar_territorio_seguro(&cabeza, jugadores);
 
@@ -274,11 +275,12 @@ void iniciar_modo_facil()
         // Aumentar estadistica random en territorio random para simular el paso del tiempo
         seleccionar_territorio_estadistica_random(cabeza);
         comprobar_eliminar_territorio_seguro(&cabeza, jugadores);
-        
+
         turno++;
     }
 
-    if(comprobar_perder(cabeza) == 1) {
+    if (comprobar_perder(cabeza) == 1)
+    {
         perder();
     }
 
@@ -387,11 +389,12 @@ void iniciar_modo_dificil()
     hashmap *problematicas = crear_problematicas_facil(cabeza);
 
     int turno = 1;
-    while(comprobar_perder(cabeza) == 0 && comprobar_ganar(cabeza) == 0) {
+    while (comprobar_perder(cabeza) == 0 && comprobar_ganar(cabeza) == 0)
+    {
         printf("\n=== TURNO %d ===\n", turno);
-        
+
         ejecutar_turno(jugadores, cabeza);
-        //Aumentar estadistica random en territorio random para simular el paso del tiempo
+        // Aumentar estadistica random en territorio random para simular el paso del tiempo
         seleccionar_territorio_estadistica_random(cabeza);
         comprobar_eliminar_territorio_con_piratas(&cabeza, jugadores, piratas);
 
@@ -413,7 +416,8 @@ void iniciar_modo_dificil()
         turno++;
     }
 
-    if(comprobar_perder(cabeza) == 1) {
+    if (comprobar_perder(cabeza) == 1)
+    {
         perder();
     }
 
