@@ -114,7 +114,7 @@ void ejecutar_turno(jugadorList *jugadores, Territorio *cabeza)
 
     jugador *j1 = jugadores->inicio;
     
-    // Safety check: verify player's location still exists
+    // Verificar si la ubicación del jugador sigue siendo válida
     if (!j1->ubicacion) {
         printf("ERROR: Jugador %s sin ubicación válida. Buscar territorio alternativo...\n", j1->nombre);
         j1->ubicacion = encontrar_territorio_alternativo(cabeza, "");
@@ -178,7 +178,7 @@ void ejecutar_turno(jugadorList *jugadores, Territorio *cabeza)
 
                 if (!destino) {
                     printf("\n¡ADVERTENCIA! El territorio %s ya no existe. Conexión actualizada.\n", cod);
-                    // Remove invalid connection
+                    // Remover coneccion invalida
                     for (int k = choice - 1; k < j1->ubicacion->cantidad_conexiones - 1; k++) {
                         strcpy(j1->ubicacion->conexiones[k], j1->ubicacion->conexiones[k + 1]);
                     }
@@ -316,7 +316,7 @@ void ejecutar_turno_onu(jugadorList *jugadores, Territorio *cabeza)
         return;
     }
     
-    // Safety check: verify ONU's location still exists
+    // Verificar que la ubicacion de la ONU siga siendo valida
     if (!onu->ubicacion) {
         printf("ERROR: ONU sin ubicación válida. Buscar territorio alternativo...\n");
         onu->ubicacion = encontrar_territorio_alternativo(cabeza, "");
