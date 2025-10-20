@@ -124,12 +124,42 @@ void liberarJugadores(jugadorList *lista)
     free(lista);
 }
 
-/* Funcion que permite colocar a los jugadores de forma aleatoria y son creados en agregarPirata
-Utilizar si se necesita crear y asignar territorio de forma aleatoria un pirata (en caso de pirata inicial)
+/* Funcion que permite colocar a los piratas de forma aleatoria al iniciar el modo dificil
+Crea piratas iniciales en territorios aleatorios
 */
-void piratasInicial(Territorio *cabeza)
+void piratasInicial(pirataList *lista, Territorio *cabeza)
 {
-    // TODO: Implementar cuando sea necesario
+    if (!lista || !cabeza) return;
+
+    // Contar territorios disponibles
+    int total_territorios = 0;
+    Territorio *temp = cabeza;
+    while (temp != NULL)
+    {
+        total_territorios++;
+        temp = temp->siguiente;
+    }
+
+    if (total_territorios == 0) return;
+
+    // Crear 2 piratas iniciales en territorios aleatorios
+    int num_piratas = (total_territorios >= 2) ? 2 : 1;
+    
+    for (int i = 0; i < num_piratas; i++)
+    {
+        int indice_random = rand() % total_territorios;
+        Territorio *actual = cabeza;
+        
+        for (int j = 0; j < indice_random && actual != NULL; j++)
+        {
+            actual = actual->siguiente;
+        }
+        
+        if (actual != NULL)
+        {
+            agregarPirata(lista, actual);
+        }
+    }
 }
 
 /* Funcion que permite agregar un pirata a la lista de piratas y asignar su ubicacion
@@ -162,4 +192,46 @@ void agregarPirata(pirataList *pirataList, Territorio *ubicacion)
         nuevoPirata->ant = pirataList->final;
         pirataList->final = nuevoPirata;
     }
+}
+
+// Funcion para mostrar todos los piratas y sus ubicaciones
+void mostrarPiratas(pirataList *lista)
+{
+    if (lista == NULL || lista->inicio == NULL)
+    {
+        printf("No hay piratas en la partida.\n");
+        return;
+    }
+
+    printf("\n>> PIRATAS EN LA PARTIDA:\n");
+    printf("--------------------------------------------------------------\n");
+
+    pirata *actual = lista->inicio;
+    int contador = 1;
+    while (actual != NULL)
+    {
+        printf("  Pirata %d | Ubicacion: %s (%s)\n",
+               contador,
+               actual->ubicacion->nombre,
+               actual->ubicacion->codigo);
+        actual = actual->sigt;
+        contador++;
+    }
+    printf("--------------------------------------------------------------\n\n");
+}
+
+// Funcion para liberar la memoria de la lista de piratas
+void liberarPiratas(pirataList *lista)
+{
+    if (lista == NULL)
+        return;
+
+    pirata *actual = lista->inicio;
+    while (actual != NULL)
+    {
+        pirata *siguiente = actual->sigt;
+        free(actual);
+        actual = siguiente;
+    }
+    free(lista);
 }

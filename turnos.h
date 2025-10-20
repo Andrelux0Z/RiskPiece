@@ -27,4 +27,10 @@ void ejecutar_turno(jugadorList *jugadores, Territorio *cabeza);
 */
 void ejecutar_turno_onu(jugadorList *jugadores, Territorio *cabeza);
 
+/*
+* Esta funcion ejecuta el turno de los piratas en modo dificil
+* Los piratas causan daño y aumentan +1 a las problemáticas
+*/
+void ejecutar_turno_piratas(pirataList *piratas, Territorio *cabeza);
+
 #endif

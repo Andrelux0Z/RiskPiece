@@ -39,7 +39,9 @@ Territorio *buscarTerritorioPorNumero(int codigo, Territorio *cabeza);
 void agregarJugador(jugadorList *lista, Territorio *ubicacion, char *nombre);
 void mostrarJugadores(jugadorList *lista);
 void liberarJugadores(jugadorList *lista);
-void piratasInicial(Territorio *cabeza);
+void piratasInicial(pirataList *lista, Territorio *cabeza);
 void agregarPirata(pirataList *pirataList, Territorio *ubicacion);
+void mostrarPiratas(pirataList *lista);
+void liberarPiratas(pirataList *lista);
 
 #endif
