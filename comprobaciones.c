@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "generacion_terreno.h"
 #include "jugadores.h"
 #include "comprobaciones.h"
@@ -107,6 +108,104 @@ void comprobar_eliminar_territorio_seguro(Territorio **cabeza, jugadorList *juga
                     printf("%s tuvo que ser evacuado a %s (%s)\n", j->nombre, (*cabeza)->nombre, (*cabeza)->codigo);
                 }
                 j = j->sigt;
+            }
+        }
+        
+        //quitar conexiones de los territorios vecinos
+        limpiar_conexiones_territorio(*cabeza, territorios_a_eliminar[i]);
+        
+        eliminarTerritorio(cabeza, territorios_a_eliminar[i]);
+        // ver si lista no esté vacía
+        if (!*cabeza)
+        {
+            break;
+        }
+    }
+}
+
+// Verifica si todas las estadisticas de un territorio son 3 (modo difícil con piratas)
+void comprobar_eliminar_territorio_con_piratas(Territorio **cabeza, jugadorList *jugadores, pirataList *piratas)
+{
+    if (!cabeza || !*cabeza) return;
+    
+    // Crear lista de territorios a eliminar
+    char territorios_a_eliminar[10][4];
+    Territorio *territorios_colapsados[10];
+    int count = 0;
+    
+    // identificar territorios a eliminar
+    Territorio *actual = *cabeza;
+    while (actual != NULL && count < 10)
+    {
+        if (actual->A == 3 && actual->B == 3 && actual->C == 3)
+        {
+            strncpy(territorios_a_eliminar[count], actual->codigo, 3);
+            territorios_a_eliminar[count][3] = '\0';
+            territorios_colapsados[count] = actual;
+            count++;
+        }
+        actual = actual->siguiente;
+    }
+    
+
+    // eliminar territorios
+    for (int i = 0; i < count; i++)
+    {
+        printf("\nALERTA! El territorio %s ha colapsado por problemas extremos.\n", territorios_a_eliminar[i]);
+        
+        // mover a los jugadores a otro territorio
+        if (jugadores && jugadores->inicio)
+        {
+            jugador *j = jugadores->inicio;
+            while (j != NULL)
+            {
+                if (j->ubicacion && j->ubicacion->codigo && 
+                    strcmp(j->ubicacion->codigo, territorios_a_eliminar[i]) == 0)
+                {
+                    // Mover al primer territorio disponible
+                    j->ubicacion = *cabeza;
+                    printf("%s tuvo que ser evacuado a %s (%s)\n", j->nombre, (*cabeza)->nombre, (*cabeza)->codigo);
+                }
+                j = j->sigt;
+            }
+        }
+        
+        // mover a los piratas a otro territorio
+        if (piratas && piratas->inicio)
+        {
+            pirata *p = piratas->inicio;
+            while (p != NULL)
+            {
+                if (p->ubicacion && p->ubicacion->codigo && 
+                    strcmp(p->ubicacion->codigo, territorios_a_eliminar[i]) == 0)
+                {
+                    // Mover al primer territorio disponible diferente al que colapsa
+                    Territorio *nuevo_territorio = encontrar_territorio_alternativo(*cabeza, territorios_a_eliminar[i]);
+                    if (nuevo_territorio)
+                    {
+                        p->ubicacion = nuevo_territorio;
+                        printf("Un pirata lo logro y escapo a %s (%s)\n", 
+                               nuevo_territorio->nombre, 
+                               nuevo_territorio->codigo);
+                    }
+                }
+                p = p->sigt;
+            }
+        }
+        
+        // Crear un nuevo pirata en un territorio vecino del que colapsó
+        if (piratas && territorios_colapsados[i] && territorios_colapsados[i]->cantidad_conexiones > 0)
+        {
+            int indice_vecino = rand() % territorios_colapsados[i]->cantidad_conexiones;
+            const char *codigo_vecino = territorios_colapsados[i]->conexiones[indice_vecino];
+            Territorio *territorio_pirata = buscarTerritorioPorCodigo(codigo_vecino, *cabeza);
+            
+            if (territorio_pirata)
+            {
+                agregarPirata(piratas, territorio_pirata);
+                printf("¡Del caos surge un nuevo pirata en %s (%s)!\n", 
+                       territorio_pirata->nombre, 
+                       territorio_pirata->codigo);
             }
         }
         

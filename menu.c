@@ -247,6 +247,16 @@ void iniciar_modo_dificil()
     jugadores->inicio = NULL;
     jugadores->final = NULL;
 
+    // Crear lista de piratas
+    pirataList *piratas = malloc(sizeof(pirataList));
+    if (!piratas)
+    {
+        free(jugadores); // no hay memoria, hacemos free
+        return;
+    }
+    piratas->inicio = NULL;
+    piratas->final = NULL;
+
     // Pedir nombre del jugador
     char nombreJugador[32];
     printf("\n>> CONFIGURACION DE JUGADORES\n");
@@ -289,11 +299,15 @@ void iniciar_modo_dificil()
         ubicacionONU = buscarTerritorioPorCodigo(codigoONU, cabeza);
     } while (ubicacionONU == NULL || (ubicacionJugador != NULL && strcmp(ubicacionONU->codigo, ubicacionJugador->codigo) == 0));
 
-    // Nombre fijo "ONU"
+    // Nombre fijo ONU
     agregarJugador(jugadores, ubicacionONU, "ONU");
 
     // Mostrar informacion de los jugadores
     mostrarJugadores(jugadores);
+
+    // Inicializar piratas en el modo difícil
+    piratasInicial(piratas, cabeza);
+    mostrarPiratas(piratas);
 
     hashmap *problematicas = crear_problematicas_facil(cabeza);
 
@@ -304,7 +318,7 @@ void iniciar_modo_dificil()
         ejecutar_turno(jugadores, cabeza);
         //Aumentar estadistica random en territorio random para simular el paso del tiempo
         seleccionar_territorio_estadistica_random(cabeza);
-        comprobar_eliminar_territorio_seguro(&cabeza, jugadores);
+        comprobar_eliminar_territorio_con_piratas(&cabeza, jugadores, piratas);
 
         if (comprobar_perder(cabeza) == 1 || comprobar_ganar(cabeza) == 1)
             break;
@@ -312,7 +326,14 @@ void iniciar_modo_dificil()
         ejecutar_turno_onu(jugadores, cabeza);
         // Aumentar estadistica random en territorio random para simular el paso del tiempo
         seleccionar_territorio_estadistica_random(cabeza);
-        comprobar_eliminar_territorio_seguro(&cabeza, jugadores);
+        comprobar_eliminar_territorio_con_piratas(&cabeza, jugadores, piratas);
+
+        if (comprobar_perder(cabeza) == 1 || comprobar_ganar(cabeza) == 1)
+            break;
+
+        // Turno de los piratas - causan daño y aumentan problematicas
+        ejecutar_turno_piratas(piratas, cabeza);
+        comprobar_eliminar_territorio_con_piratas(&cabeza, jugadores, piratas);
         
         turno++;
     }
@@ -321,15 +342,13 @@ void iniciar_modo_dificil()
         perder();
     }
 
-    // TODO: agregar logica extra para modo dificil (A;adir piratas y que estos afecten el juego)
-    // TODO: seguir logica del juego (hacer problematicas mas complicadas, cosa de piratas)
-
     printf("Presiona ENTER para volver al menu principal...");
     limpiar_buffer();
     getchar();
 
     // Liberar memoria
     liberarJugadores(jugadores);
+    liberarPiratas(piratas);
     hashmap_eliminar(problematicas);
     liberar_lista(cabeza);
 }

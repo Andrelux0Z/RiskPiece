@@ -460,3 +460,95 @@ void ejecutar_turno_onu(jugadorList *jugadores, Territorio *cabeza)
     imprimir_tabla(cabeza);
     printf("\n");
 }
+
+/*
+* Funcion que ejecuta el turno de todos los piratas
+* Los piratas causan daño y aumentan +1 a las problemáticas en su territorio
+*/
+void ejecutar_turno_piratas(pirataList *piratas, Territorio *cabeza)
+{
+    if (!piratas || !piratas->inicio || !cabeza)
+    {
+        return;
+    }
+
+    printf("\n============ TURNO DE LOS PIRATAS ============\n");
+    printf("Los piratas siembran el caos y aumentan las problematicas...\n\n");
+
+    pirata *actual = piratas->inicio;
+    int contador_piratas = 1;
+
+    while (actual != NULL)
+    {
+        if (actual->ubicacion == NULL)
+        {
+            actual = actual->sigt;
+            continue;
+        }
+
+        printf("-- Pirata %d en %s (%s) --\n", 
+               contador_piratas, 
+               actual->ubicacion->nombre, 
+               actual->ubicacion->codigo);
+
+        // Decidir acción aleatoria: 50% mover, 50% atacar
+        int accion = rand() % 2;
+
+        if (accion == 0 && actual->ubicacion->cantidad_conexiones > 0)
+        {
+            // Moverse a un territorio vecino aleatorio
+            int indice_vecino = rand() % actual->ubicacion->cantidad_conexiones;
+            const char *codigo_vecino = actual->ubicacion->conexiones[indice_vecino];
+            Territorio *nuevo_territorio = buscarTerritorioPorCodigo(codigo_vecino, cabeza);
+
+            if (nuevo_territorio != NULL)
+            {
+                actual->ubicacion = nuevo_territorio;
+                printf("  -> El pirata se mueve a %s (%s)\n", 
+                       nuevo_territorio->nombre, 
+                       nuevo_territorio->codigo);
+            }
+        }
+
+        // Atacar: aumentar una estadística aleatoria en +1
+        int estadistica_atacar = rand() % 3;  // 0=A, 1=B, 2=C
+        char stat_nombre;
+
+        switch (estadistica_atacar)
+        {
+            case 0:
+                if (actual->ubicacion->A < 3)
+                {
+                    actual->ubicacion->A++;
+                }
+                stat_nombre = 'A';
+                break;
+            case 1:
+                if (actual->ubicacion->B < 3)
+                {
+                    actual->ubicacion->B++;
+                }
+                stat_nombre = 'B';
+                break;
+            case 2:
+                if (actual->ubicacion->C < 3)
+                {
+                    actual->ubicacion->C++;
+                }
+                stat_nombre = 'C';
+                break;
+        }
+
+        printf("  -> El pirata aumenta la problematica %c en +1!\n", stat_nombre);
+        printf("     Estado: A:%d B:%d C:%d\n\n", 
+               actual->ubicacion->A, 
+               actual->ubicacion->B, 
+               actual->ubicacion->C);
+
+        actual = actual->sigt;
+        contador_piratas++;
+    }
+
+    printf("Fin del turno de los piratas.\n\n");
+}
+
