@@ -349,46 +349,45 @@ void aumentar_estadistica_vecinos(Territorio *cabeza, const char *codigo, char e
 		objetivo = &actual->C;
 	}
 
-	// Si la estadística del territorio aún no está al máximo, simplemente súbela en el propio territorio
+	// Si la estadística del territorio aún no está al máximo, simplemente se sube en 1
 	if (*objetivo < 3)
 	{
 		*objetivo = *objetivo + 1;
 		return;
 	}
 
-	// Si ya está en 3, propagar a todos los vecinos la misma estadística
-	for (int i = 0; i < actual->cantidad_conexiones; i++)
+	// Si ya está en 3, se propaga al territorio anterior y siguiente en la lista
+	if (actual->anterior)
 	{
-		const char *codigoVecino = actual->conexiones[i];
+		int *cambio = NULL; // puntero al cambio
+		if (estadistica == 'A') {
+			cambio = &actual->anterior->A;
+		} else if (estadistica == 'B') {
+			cambio = &actual->anterior->B;
+		} else if (estadistica == 'C') {
+			cambio = &actual->anterior->C;
+		}
 
-		// buscar vecino por codigo recorriendo la lista
-		Territorio *vec = cabeza;
-		while (vec && strcmp(vec->codigo, codigoVecino) != 0)
+		if (cambio && *cambio < 3)
 		{
-			vec = vec->siguiente;
+			*cambio = limitar_a_rango_0_a_3(*cambio + 1);
 		}
-		if (!vec)
-			continue;
-		int *dest = NULL;
-		if (estadistica == 'A')
-		{
-			dest = &vec->A;
+	}
+	
+	if (actual->siguiente)
+	{
+		int *cambio = NULL;
+		if (estadistica == 'A') {
+			cambio = &actual->siguiente->A;
+		} else if (estadistica == 'B') {
+			cambio = &actual->siguiente->B;
+		} else if (estadistica == 'C') {
+			cambio = &actual->siguiente->C;
 		}
-		else if (estadistica == 'B')
+
+		if (cambio && *cambio < 3)
 		{
-			dest = &vec->B;
-		}
-		else if (estadistica == 'C')
-		{
-			dest = &vec->C;
-		}
-		else
-		{
-			continue;
-		}
-		if (*dest < 3)
-		{
-			*dest = limitar_a_rango_0_a_3(*dest + 1);
+			*cambio = limitar_a_rango_0_a_3(*cambio + 1);
 		}
 	}
 }
