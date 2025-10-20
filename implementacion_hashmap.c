@@ -1,4 +1,5 @@
-/* Juego [nombre]
+/* 
+* Juego Societas
 * Implementación del Hashmaps
 * Estructuras de Datos
 * II Semestre 2025
@@ -14,30 +15,30 @@
 /*
 * Este struct es el nodo del hashmap. Tiene nombre, descripcion y paises.
 */
-struct nodo {
+typedef struct {
     char* key;
     char* nombre_completo;
     char* descripcion;
     struct Territorio* paises;
-};
+} nodo;
 
 /*
 * Implementacion del hashmap, va a usar los nodos, capacidad maxima 
 * (lo vamos a usar si llegamos a mas del 75% de longitud, cambiarlo) y longitud
 */
-struct hashmap {
+typedef struct {
     nodo* nodos;
     int capacidad;
     int length;
-};
+} hashmap;
 
 /*
 * Funcion para crear el hashmap, elegimos el length y capacidad. Luego,
 * asignamos la memoria de cada nodo con calloc
 */
 hashmap* hashmap_crear(void) {
-    // Evitar sombreado de nombre de tipo y asignar el tamano correcto de la estructura
-    hashmap* mapa = (hashmap*)calloc(1, sizeof(struct hashmap));
+    // asignar el tamano correcto de la estructura
+    hashmap* mapa = (hashmap*)calloc(1, sizeof(hashmap));
     if (!mapa) return NULL;
     mapa->length = 0;
     mapa->capacidad = 10; // se puede cambiar si crecen las problematicas
@@ -50,13 +51,13 @@ hashmap* hashmap_crear(void) {
 
 /*
 * Funcion para recibir un integer cuando se da un string (funcion hash)
-* En esto usé un hash de Daniel J. Bernstein llamado DJB2, más info en docu
+* En esto usé un hash de Daniel J. Bernstein llamado DJB2
 */
 unsigned int hashmap_djb2(char* string) {
     unsigned int hash = 5381; //unsigned lo que hace es no permitir negativos (igual que en Rust)
     int c;
     while((c = *string++)) {
-        hash = ((hash << 5) + hash) + c; //esta logica está sumamente interesante, ver más info en docu
+        hash = ((hash << 5) + hash) + c; //esta logica está sumamente interesante
     }
     return hash; //luego hacerle el modulo 11
 }
