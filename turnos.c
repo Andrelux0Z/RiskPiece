@@ -94,11 +94,11 @@ void listar_vecinos(Territorio *t,Territorio *cabeza)
         return;
     }
 
-    printf("Vecinos disponibles:\n");
+    printf("\nVecinos disponibles:\n");
 
     for (int i = 0; i < t->cantidad_conexiones; i++) {
         Territorio* vecino = buscarTerritorioPorCodigo(t->conexiones[i], cabeza); // Asegura que el código es válido
-        printf("  %d) %s\n", i + 1, vecino->nombre);
+        printf("  %d) %s (%s)\n", i + 1, vecino->nombre,vecino->codigo);
     }
 }
 
