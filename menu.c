@@ -117,26 +117,26 @@ static void mostrar_introduccion_facil(const char *grupo)
     printf("                      INTRODUCCION - MODO FACIL                        \n");
     printf("======================================================================\n\n");
 
-    printf("Hace años las naciones se tambaleaban por diversas problematicas sumamente graves, como la esclavitud y el abuso de drogas.\n");
+    printf("Hace tiempo las naciones se tambaleaban por diversas problematicas sumamente graves, como la esclavitud y el abuso de drogas.\n");
     printf("Tu grupo anarquista, %s, ha surgido como una chispa de cambio: organizada,\n", grupo);
     printf("valiente y decidida a devolverle dignidad a la gente de estas diversas regiones. El estado actual de\n");
     printf("los territorios exige acciones concretas e inmmediatas: proyectos comunitarios, redes\n");
-    printf("de apoyo y campañas de concienciación.\n\n");
+    printf("de apoyo y campañas de concienciacion.\n\n");
 
     printf("En este contexto, cuentas con recursos y tiempo para planear con calma.\n");
     printf("esto no debe frenar tu impulso, ya que esto no es un juego, la vida de las personas\n");
     printf("de cada una de las personas de estas regiones depende de tus decisiones.\n\n");
-    printf("Tu liderazgo inspira a la población local, y la ONU responderá con\n");
-    printf("mayor predisposición para financiar y ejecutar proyectos cuando el\n");
+    printf("Tu liderazgo inspira a la poblacion local, y la ONU respondera con\n");
+    printf("mayor predisposicion para financiar y ejecutar proyectos cuando el\n");
     printf("movimiento muestre resultados claros. Cada victoria local aumenta la\n");
-    printf("participación internacional y acelera la recuperación.\n\n");
+    printf("participacion internacional y acelera la recuperacion.\n\n");
 
 
-    printf("Como ejemplos breves: podríais construir cisternas y sistemas de riego\n");
-    printf("para mitigar sequías, organizar programas de memoria y archivos\n");
+    printf("Como ejemplos breves: podriais construir cisternas y sistemas de riego\n");
+    printf("para mitigar sequias, organizar programas de memoria y archivos\n");
     printf("comunitarios para combatir el olvido social, o lanzar iniciativas de\n");
     printf("empleo local para reducir la pobreza. Estas acciones muestran impacto\n");
-    printf("y ayudan a atraer apoyo internacional para proyectos más grandes.\n\n");
+    printf("y ayudan a atraer apoyo internacional para proyectos mas grandes.\n\n");
 
     printf("Presiona ENTER para continuar y tomar tu primer paso hacia el cambio...");
     limpiar_buffer();
@@ -159,17 +159,17 @@ static void mostrar_introduccion_dificil(const char *grupo)
     printf("de destruir de forma superficial el problema, sino construir alternativas reales desde la base.\n\n");
 
     printf("En este contexto, las dificultades son mayores: menos recursos, problemas\n");
-    printf("más complejos y actores hostiles. Sin embargo, cuando la acción imponente de tu grupo\n");
+    printf("mas complejos y actores hostiles. Sin embargo, cuando la accion imponente de tu grupo\n");
     printf("impacte positivamente en un territorio, la ONU puede verse forzada a\n");
-    printf("intervenir y lanzar proyectos de apoyo. Vuestras campañas públicas y\n");
+    printf("intervenir y lanzar proyectos de apoyo. Vuestras campañas publicas y\n");
     printf("vuestras alianzas son la clave para atraer a la comunidad internacional.\n\n");
 
-    printf("Mantén la moral alta: cada acción cuenta y puede cambiar la reacción de la ONU.\n");
+    printf("Manten la moral alta: cada accion cuenta y puede cambiar la reaccion de la ONU.\n");
     
-    printf("Por ejemplo, en situaciones críticas se debe priorizar el reparto de agua,\n");
-    printf("organizar operativos de liberación frente a la esclavitud y distribuir\n");
-    printf("kits de potabilización para fuentes contaminadas. Intervenciones rápidas\n");
-    printf("como estas demuestran impacto y pueden provocar la implicación de la ONU.\n\n");
+    printf("Por ejemplo, en situaciones criticas se debe priorizar el reparto de agua,\n");
+    printf("organizar operativos de liberacion frente a la esclavitud y distribuir\n");
+    printf("kits de potabilizacion para fuentes contaminadas. Intervenciones veloces\n");
+    printf("como estas demuestran impacto y pueden provocar la implicacion de la ONU.\n\n");
     printf("Presiona ENTER para aceptar la carga y empezar a forjar el cambio...");
     limpiar_buffer();
     getchar();
@@ -224,7 +224,7 @@ void iniciar_modo_facil()
         strcpy(nombreJugador, "Jugador");
     }
 
-    //Mostrar introduccion específica del modo facil para el grupo ingresado.
+    //Mostrar introduccion especifica del modo facil para el grupo ingresado.
     mostrar_introduccion_facil(nombreJugador);
 
     // Asignar territorio aleatorio al jugador
@@ -348,7 +348,7 @@ void iniciar_modo_dificil()
         strcpy(nombreJugador, "Jugador");
     }
 
-    //Mostrar introduccion específica del modo dificil para el grupo ingresado.
+    //Mostrar introduccion especifica del modo dificil para el grupo ingresado.
     mostrar_introduccion_dificil(nombreJugador);
 
 
@@ -380,7 +380,7 @@ void iniciar_modo_dificil()
     // Mostrar informacion de los jugadores
     mostrarJugadores(jugadores);
 
-    // Inicializar piratas en el modo difícil
+    // Inicializar piratas en el modo dificil
     piratasInicial(piratas, cabeza);
     mostrarPiratas(piratas);
 
