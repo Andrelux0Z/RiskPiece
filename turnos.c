@@ -104,19 +104,28 @@ void listar_vecinos(Territorio *t,Territorio *cabeza)
 
 /*
 * Esta funcion funciona para hacer el turno del usuario, compila varias funciones
-* para hacer que todo funcione (dice primera porque así se implemento inicialmente
-* luego nos dimos cuenta del error pero no cambiamos las cosas jaja)
+* para hacer que todo funcione
 */
-void ejecutar_primer_turno(jugadorList *jugadores, Territorio *cabeza)
+void ejecutar_turno(jugadorList *jugadores, Territorio *cabeza)
 {
     if (!jugadores || !jugadores->inicio) {
         return;
     }
 
     jugador *j1 = jugadores->inicio;
+    
+    // Safety check: verify player's location still exists
+    if (!j1->ubicacion) {
+        printf("ERROR: Jugador %s sin ubicación válida. Buscar territorio alternativo...\n", j1->nombre);
+        j1->ubicacion = encontrar_territorio_alternativo(cabeza, "");
+        if (!j1->ubicacion) {
+            printf("ERROR CRÍTICO: No hay territorios disponibles.\n");
+            return;
+        }
+    }
     int acciones = 4;
 
-    printf("\n================ PRIMER TURNO (Jugador: %s) ================\n", j1->nombre);
+    printf("\n================ TURNO DE %s ================\n", j1->nombre);
     mostrar_estado_territorio(j1->ubicacion);
 
     while (acciones > 0) {
@@ -168,7 +177,14 @@ void ejecutar_primer_turno(jugadorList *jugadores, Territorio *cabeza)
                 Territorio *destino = buscarTerritorioPorCodigo(cod, cabeza);
 
                 if (!destino) {
-                    printf("No se encontro el territorio destino.\n\n");
+                    printf("\n¡ADVERTENCIA! El territorio %s ya no existe. Conexión actualizada.\n", cod);
+                    // Remove invalid connection
+                    for (int k = choice - 1; k < j1->ubicacion->cantidad_conexiones - 1; k++) {
+                        strcpy(j1->ubicacion->conexiones[k], j1->ubicacion->conexiones[k + 1]);
+                    }
+                    j1->ubicacion->cantidad_conexiones--;
+                    j1->ubicacion->conexiones[j1->ubicacion->cantidad_conexiones][0] = '\0';
+                    printf("Selecciona otra opción.\n\n");
                     break;
                 }
 
@@ -285,8 +301,7 @@ void ejecutar_primer_turno(jugadorList *jugadores, Territorio *cabeza)
 
 /*
 * Esta funcion funciona para hacer el turno de la computadora (la ONU)
-* para hacer que todo funcione (dice primera porque así se implemento inicialmente
-* luego nos dimos cuenta del error pero no cambiamos las cosas jaja)
+* para hacer que todo funcione
 */
 void ejecutar_turno_onu(jugadorList *jugadores, Territorio *cabeza)
 {
@@ -300,8 +315,18 @@ void ejecutar_turno_onu(jugadorList *jugadores, Territorio *cabeza)
     if (!onu) {
         return;
     }
+    
+    // Safety check: verify ONU's location still exists
+    if (!onu->ubicacion) {
+        printf("ERROR: ONU sin ubicación válida. Buscar territorio alternativo...\n");
+        onu->ubicacion = encontrar_territorio_alternativo(cabeza, "");
+        if (!onu->ubicacion) {
+            printf("ERROR CRÍTICO: No hay territorios disponibles para ONU.\n");
+            return;
+        }
+    }
 
-    printf("================ TURNO DE ( %s ) ================\n\n", onu->nombre);
+    printf("================ TURNO DE %s ================\n\n", onu->nombre);
 
     // 4 acciones aleatorias
     int ultimo_vecino_idx = -1; // para no repetir el mismo vecino consecutivamente
@@ -343,6 +368,16 @@ void ejecutar_turno_onu(jugadorList *jugadores, Territorio *cabeza)
                     if (destino) {
                         printf("ONU se mueve de %s (%s) a %s (%s).\n", onu->ubicacion->nombre, onu->ubicacion->codigo, destino->nombre, destino->codigo);
                         onu->ubicacion = destino;
+                    } else {
+                        printf("ONU intenta moverse a %s pero el territorio ya no existe.\n", cod);
+                        // Clean up invalid connection
+                        for (int k = choice; k < onu->ubicacion->cantidad_conexiones - 1; k++) {
+                            strcpy(onu->ubicacion->conexiones[k], onu->ubicacion->conexiones[k + 1]);
+                        }
+                        onu->ubicacion->cantidad_conexiones--;
+                        if (onu->ubicacion->cantidad_conexiones > 0) {
+                            onu->ubicacion->conexiones[onu->ubicacion->cantidad_conexiones][0] = '\0';
+                        }
                     }
                 }
                 break;

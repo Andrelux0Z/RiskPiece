@@ -389,38 +389,38 @@ void aumentar_estadistica_vecinos(Territorio *cabeza, const char *codigo, char e
 		if (*dest < 3)
 		{
 			*dest = limitar_a_rango_0_a_3(*dest + 1);
-			continue;
 		}
-		if (comprobar_tres_todos(cabeza, estadistica) == 1)
-		{
-			return;
-		}
-		aumentar_estadistica_vecinos(cabeza, codigoVecino, estadistica);
 	}
 }
 
-void eliminarTerritorio(Territorio *cabeza, const char *codigo)
+void eliminarTerritorio(Territorio **cabeza, const char *codigo)
 {
-	Territorio *actual = cabeza;
+	if (!cabeza || !*cabeza) return;
+	Territorio *actual = *cabeza;
 	while (actual)
 	{
 		if (strcmp(actual->codigo, codigo) == 0)
-		{ // strcmp retorna 0 si se encuentra el codigo
-			// Ajustar punteros de vecinos
+		{
+			// Reconectar vecino anterior y siguiente
 			if (actual->anterior)
 			{
 				actual->anterior->siguiente = actual->siguiente;
 			}
 			else
 			{
-				// Si es la cabeza, mover la cabeza al siguiente
-				cabeza = actual->siguiente;
+				// Eliminando la cabeza
+				*cabeza = actual->siguiente;
 			}
 			if (actual->siguiente)
 			{
 				actual->siguiente->anterior = actual->anterior;
 			}
-			free(actual); // Liberar memoria (funciona independientemente si es el ultimo nodo o no)
+			// actualizar el puntero anterior del siguiente nodo
+			if (actual->siguiente && actual->siguiente->anterior == actual)
+			{
+				actual->siguiente->anterior = actual->anterior;
+			}
+			free(actual);
 			return;
 		}
 		actual = actual->siguiente;
@@ -431,35 +431,106 @@ void eliminarTerritorio(Territorio *cabeza, const char *codigo)
 // realiza su respectiva conversion y llama a la funcion aumentar_estadistica
 void seleccionar_territorio_estadistica_random(Territorio *cabeza)
 {
+	if (!cabeza) return;
+	
+	// Contar territorios disponibles
+	int total_territorios = 0;
+	Territorio *temp = cabeza;
+	while (temp != NULL) {
+		total_territorios++;
+		temp = temp->siguiente;
+	}
+	
+	if (total_territorios == 0) return;
+	
 	for (int i = 0; i < 3; i++)
 	{
-		int codigoRandom = (rand() % 9) + 1; // 1..9
 		int estadisticaRandom = rand() % 3;	 // 0=A, 1=B, 2=C
-
-		while (1)
+		
+		// Seleccionar territorio aleatorio de los disponibles
+		int indice_random = rand() % total_territorios;
+		Territorio *actual = cabeza;
+		
+		for (int j = 0; j < indice_random && actual != NULL; j++) {
+			actual = actual->siguiente;
+		}
+		
+		if (actual != NULL && actual->codigo)
 		{
-			Territorio *actual = buscarTerritorioPorNumero(codigoRandom, cabeza);
-			if (actual != NULL)
+			if (estadisticaRandom == 0)
 			{
-				if (estadisticaRandom == 0)
-				{
-					aumentar_estadistica_vecinos(cabeza, actual->codigo, 'A');
-				}
-				else if (estadisticaRandom == 1)
-				{
-					aumentar_estadistica_vecinos(cabeza, actual->codigo, 'B');
-				}
-				else
-				{
-					aumentar_estadistica_vecinos(cabeza, actual->codigo, 'C');
-				}
-				break; // Si el territorio fue encontrado, si no, se repite el proceso
+				aumentar_estadistica_vecinos(cabeza, actual->codigo, 'A');
+			}
+			else if (estadisticaRandom == 1)
+			{
+				aumentar_estadistica_vecinos(cabeza, actual->codigo, 'B');
 			}
 			else
 			{
-				// Si no se encontró, volver a generar otro código
-				codigoRandom = (rand() % 9) + 1;
+				aumentar_estadistica_vecinos(cabeza, actual->codigo, 'C');
 			}
 		}
+	}
+}
+
+// Funcion para encontrar un territorio alternativo para los jugadores cuando se elimina un territorio (y no queden perdidos)
+Territorio *encontrar_territorio_alternativo(Territorio *cabeza, const char *codigo_eliminado)
+{
+	if (!cabeza) return NULL;
+	
+	Territorio *actual = cabeza;
+	Territorio *alternativa = NULL;
+	
+	// Buscar el primer territorio que no sea el que se va a eliminar
+	while (actual != NULL)
+	{
+		if (strcmp(actual->codigo, codigo_eliminado) != 0)
+		{
+			alternativa = actual;
+			break;
+		}
+		actual = actual->siguiente;
+	}
+	
+	// Si no se encontró alternativa, usar la cabeza (último recurso)
+	if (!alternativa && cabeza)
+	{
+		alternativa = cabeza;
+	}
+	
+	return alternativa;
+}
+
+// Funcion para quitar las conexiones de los territorios vecinos cuando se elimina un territorio
+void limpiar_conexiones_territorio(Territorio *cabeza, const char *codigo_eliminado)
+{
+	if (!cabeza || !codigo_eliminado) return;
+	
+	Territorio *actual = cabeza;
+	while (actual != NULL)
+	{
+		// saltar el territorio que se va a eliminar
+		if (strcmp(actual->codigo, codigo_eliminado) != 0)
+		{
+			// verificar todas las conexiones y quitar las referencias al territorio eliminado
+			int i = 0;
+			while (i < actual->cantidad_conexiones)
+			{
+				if (strcmp(actual->conexiones[i], codigo_eliminado) == 0)
+				{
+					for (int j = i; j < actual->cantidad_conexiones - 1; j++)
+					{
+						strcpy(actual->conexiones[j], actual->conexiones[j + 1]);
+					}
+					actual->conexiones[actual->cantidad_conexiones - 1][0] = '\0';
+					actual->cantidad_conexiones--;
+				}
+				else
+				{
+					i++;
+				}
+			}
+		}
+		actual = actual->siguiente;
 	}
 }
