@@ -1,33 +1,19 @@
 #include "generacion_terreno.h"
 #include "implementacion_hashmap.h"
 #include "jugadores.h"
+#include "comprobaciones.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
-/*
-* Struct que define el territorio (esto es una lista doblemente enlazada)
-* Cada nodo tiene un código, nombre, conexiones, A/B/C (cada problema), anterior/siguiente
-*/
-typedef struct Territorio
-{
-    char codigo[3];
-    char nombre[32];
-    char conexiones[4][3];
-    int cantidad_conexiones;
-    int A;
-    int B;
-    int C;
-    struct Territorio *anterior;
-    struct Territorio *siguiente;
-} Territorio;
+// La definición de Territorio está en generacion_terreno.h; no duplicar aquí.
 
 /*
-* Funcion auxiliar para limitar el rango de los valores de las problematicas,
-* retorna el int.
-*/
+ * Funcion auxiliar para limitar el rango de los valores de las problematicas,
+ * retorna el int.
+ */
 int limitar_a_rango_0_a_3(int valor)
 {
 	if (valor < 0)
@@ -42,12 +28,12 @@ int limitar_a_rango_0_a_3(int valor)
 }
 
 /*
-* Funcion para crear un territorio, normalmente iniciamos con cabeza = NULL (como inicio).
-* La función sirve para crear también los nodos, por lo que ocupamos código,
-* nombre, conexiones (y su cantidad) y los valores de los 3 problemas.
-* Retorna el territorio.
-*/
-Territorio *crear_territorio(char *codigo, char *nombre, char conexiones[][3], int cantidad_conexiones, int A, int B, int C)
+ * Funcion para crear un territorio, normalmente iniciamos con cabeza = NULL (como inicio).
+ * La función sirve para crear también los nodos, por lo que ocupamos código,
+ * nombre, conexiones (y su cantidad) y los valores de los 3 problemas.
+ * Retorna el territorio.
+ */
+Territorio *crear_territorio(const char *codigo, const char *nombre, const char conexiones[][3], int cantidad_conexiones, int A, int B, int C)
 {
 	// Reserva memoria para el nuevo nodo y valida el resultado.
 	Territorio *t = (Territorio *)malloc(sizeof(Territorio));
@@ -90,9 +76,9 @@ Territorio *crear_territorio(char *codigo, char *nombre, char conexiones[][3], i
 }
 
 /*
-* Funcion para agregar un territorio (nodo) creado con crear_territorio
-* lo que hace es poner este nuevo nodo al final de la lista doblemente enlazada
-*/
+ * Funcion para agregar un territorio (nodo) creado con crear_territorio
+ * lo que hace es poner este nuevo nodo al final de la lista doblemente enlazada
+ */
 void agregar_territorio(Territorio **cabeza, Territorio *nodo)
 {
 	if (!*cabeza)
@@ -108,15 +94,13 @@ void agregar_territorio(Territorio **cabeza, Territorio *nodo)
 }
 
 /*
-* Funcion para randomizar los valores de las problematicas.
-* Nota: buscarTerritorioPorCodigo(const char*, Territorio*) esta implementada en jugadores.c
-*/
+ * Funcion para randomizar los valores de las problematicas.
+ * Nota: buscarTerritorioPorCodigo(const char*, Territorio*) esta implementada en jugadores.c
+ */
 void valoresProblematicas(Territorio *cabeza)
 {
 	int n = 9; // Numero de territorios
 	int indices[n];
-	int contador = 0;
-
 	Territorio *actual = cabeza;
 
 	for (int i = 0; i < n; i++)
@@ -127,9 +111,10 @@ void valoresProblematicas(Territorio *cabeza)
 	barajar(indices, n); // Barajar los índices (Fisher-Yates shuffle)
 	actual = cabeza;
 
-	for (int i = 0; i < n; i++)
+	for (int i = 0; i < n && actual; i++)
 	{
-		actual->codigo[1] = indices[i]; // Asignar códigos barajados
+		// Guardar un indice barajado en el segundo caracter (temporalmente)
+		actual->codigo[1] = (char)indices[i];
 		actual = actual->siguiente;
 	}
 
@@ -137,14 +122,15 @@ void valoresProblematicas(Territorio *cabeza)
 
 	while (actual)
 	{
-		if (actual->codigo[1] < 3)
+		// codigo[1] contiene un indice 0..8 temporal
+		if ((unsigned char)actual->codigo[1] < 3)
 		{
 			// Caso 1: Valores de 1 en todos los aspectos
 			actual->A = 1;
 			actual->B = 1;
 			actual->C = 1;
 		}
-		else if (actual->codigo[1] < 6)
+		else if ((unsigned char)actual->codigo[1] < 6)
 		{
 			// Caso 2: Un aspecto con 2, los otros con 1
 			int aspecto = rand() % 3; // Elegir aleatoriamente el aspecto que será 2
@@ -171,7 +157,7 @@ void valoresProblematicas(Territorio *cabeza)
 
 	actual = cabeza;
 
-	for (int i = 0; i < n; i++)
+	for (int i = 0; i < n && actual; i++)
 	{
 		char temp = '0' + i + 1;  // Convertir a carácter
 		actual->codigo[1] = temp; // Reasignar códigos en orden
@@ -180,9 +166,9 @@ void valoresProblematicas(Territorio *cabeza)
 }
 
 /*
-* Funcion que baraja, lo utilizamos para randomizar. usa un método llamado
-* Fisher-Yates, cuyo objetivo es randomizar un array.
-*/
+ * Funcion que baraja, lo utilizamos para randomizar. usa un método llamado
+ * Fisher-Yates, cuyo objetivo es randomizar un array.
+ */
 void barajar(int *arreglo, int n)
 {
 	for (int i = n - 1; i > 0; i--)
@@ -195,9 +181,9 @@ void barajar(int *arreglo, int n)
 }
 
 /*
-* Funcion para imprimir los territorios.
-* Se manda cabeza, que es la lista doblemente enlazada que representa los territorios
-*/
+ * Funcion para imprimir los territorios.
+ * Se manda cabeza, que es la lista doblemente enlazada que representa los territorios
+ */
 void imprimir_tabla(Territorio *cabeza)
 {
 	printf("Codigo  | Nombre         | Conexiones     | A | B | C\n");
@@ -229,8 +215,8 @@ void imprimir_tabla(Territorio *cabeza)
 }
 
 /*
-* Funcion para liberar la memoria utilizada, y evitar fugas de memoria
-*/
+ * Funcion para liberar la memoria utilizada, y evitar fugas de memoria
+ */
 void liberar_lista(Territorio *cabeza)
 {
 	Territorio *actual = cabeza;
@@ -243,10 +229,10 @@ void liberar_lista(Territorio *cabeza)
 }
 
 /*
-* Funcion que usa las otras funciones para crear la lista de territorio,
-* con 9 territorios interconectados entre sí. Es ejemplo, porque se puede
-* reconstruir para hacer otros países
-*/
+ * Funcion que usa las otras funciones para crear la lista de territorio,
+ * con 9 territorios interconectados entre sí. Es ejemplo, porque se puede
+ * reconstruir para hacer otros países
+ */
 Territorio *construir_lista_ejemplo(void)
 {
 	Territorio *cabeza = NULL;
@@ -279,15 +265,15 @@ Territorio *construir_lista_ejemplo(void)
 }
 
 /*
-* Funcion que incrementa una estadística (A, B o C) del territorio con el código dado.
-* Si la estadística ya es 3, se incrementan en 1 las otras dos, sin pasarse de 3.
-*/
+ * Funcion que incrementa una estadística (A, B o C) del territorio con el código dado.
+ * Si la estadística ya es 3, se incrementan en 1 las otras dos, sin pasarse de 3.
+ */
 int aumentar_estadistica(Territorio *cabeza, const char *codigo, char estadistica)
 {
 	// Buscar el territorio por su código
 	// strcmp compara dos strings, si son iguales devuelve 0, si no son devuelve otro numero
 	Territorio *actual = cabeza;
-	while (strcmp(actual->codigo, codigo) != 0)
+	while (actual && strcmp(actual->codigo, codigo) != 0)
 	{
 		actual = actual->siguiente;
 	}
@@ -310,11 +296,15 @@ int aumentar_estadistica(Territorio *cabeza, const char *codigo, char estadistic
 			otra1 = &actual->A;
 			otra2 = &actual->C;
 		}
-		else
+		else if (estadistica == 'C')
 		{
 			objetivo = &actual->C;
 			otra1 = &actual->A;
 			otra2 = &actual->B;
+		}
+		else
+		{
+			return -1; // estadistica invalida
 		}
 		// Aumentar estadistica
 		if (*objetivo < 3)
@@ -326,20 +316,23 @@ int aumentar_estadistica(Territorio *cabeza, const char *codigo, char estadistic
 			*otra1 = limitar_a_rango_0_a_3(*otra1 + 1);
 			*otra2 = limitar_a_rango_0_a_3(*otra2 + 1);
 		}
+		return 0;
 	}
-	return 0;
+	return -1; // no encontrado
 }
 
 // Incrementa A/B/C del territorio dado; si esa estadística ya es 3, en lugar de subir otras del mismo territorio,
 // aumenta esa MISMA estadística en todos los territorios vecinos (según su lista de conexiones).
-void aumentar_estadistica_vecinos(Territorio *cabeza, char *codigo, char estadistica)
+void aumentar_estadistica_vecinos(Territorio *cabeza, const char *codigo, char estadistica)
 {
 	// localizar el territorio base por codigo (string de 2 chars)
 	Territorio *actual = cabeza;
-	while (strcmp(actual->codigo, codigo) != 0)
+	while (actual && strcmp(actual->codigo, codigo) != 0)
 	{
 		actual = actual->siguiente;
 	}
+	if (!actual)
+		return;
 
 	int *objetivo = NULL;
 
@@ -370,10 +363,12 @@ void aumentar_estadistica_vecinos(Territorio *cabeza, char *codigo, char estadis
 
 		// buscar vecino por codigo recorriendo la lista
 		Territorio *vec = cabeza;
-		while (strcmp(vec->codigo, codigoVecino) != 0)
+		while (vec && strcmp(vec->codigo, codigoVecino) != 0)
 		{
 			vec = vec->siguiente;
 		}
+		if (!vec)
+			continue;
 		int *dest = NULL;
 		if (estadistica == 'A')
 		{
@@ -383,14 +378,18 @@ void aumentar_estadistica_vecinos(Territorio *cabeza, char *codigo, char estadis
 		{
 			dest = &vec->B;
 		}
-		else
+		else if (estadistica == 'C')
 		{
 			dest = &vec->C;
 		}
+		else
+		{
+			continue;
+		}
 		if (*dest < 3)
 		{
-			*dest = *dest + 1;
-			return;
+			*dest = limitar_a_rango_0_a_3(*dest + 1);
+			continue;
 		}
 		if (comprobar_tres_todos(cabeza, estadistica) == 1)
 		{
@@ -400,25 +399,26 @@ void aumentar_estadistica_vecinos(Territorio *cabeza, char *codigo, char estadis
 	}
 }
 
-void eliminarTerritorio(Territorio *cabeza, char *codigo)
+void eliminarTerritorio(Territorio *cabeza, const char *codigo)
 {
 	Territorio *actual = cabeza;
 	while (actual)
 	{
 		if (strcmp(actual->codigo, codigo) == 0)
 		{ // strcmp retorna 0 si se encuentra el codigo
-
-			if (actual->anterior == NULL)
+			// Ajustar punteros de vecinos
+			if (actual->anterior)
 			{
-				actual->anterior->siguiente = actual->siguiente; // Modificar el puntero del nodo anterior
+				actual->anterior->siguiente = actual->siguiente;
 			}
 			else
 			{
-				cabeza = actual->siguiente; // Si es el primer nodo, actualizar la cabeza
+				// Si es la cabeza, mover la cabeza al siguiente
+				cabeza = actual->siguiente;
 			}
-			if (actual->siguiente == NULL)
+			if (actual->siguiente)
 			{
-				actual->siguiente->anterior = actual->anterior; // Modificar el puntero del nodo siguiente
+				actual->siguiente->anterior = actual->anterior;
 			}
 			free(actual); // Liberar memoria (funciona independientemente si es el ultimo nodo o no)
 			return;
@@ -427,31 +427,39 @@ void eliminarTerritorio(Territorio *cabeza, char *codigo)
 	}
 }
 
-//Funcion usada en menu que permite seleccionar un territorio y estadistica random,
-//realiza su respectiva conversion y llama a la funcion aumentar_estadistica
-void seleccionar_territorio_estadistica_random(Territorio *cabeza){
-	for(int i=0; i<3; i++){
-        
-        int codigoRandom = rand() % 10 + 1;
-        int estadisticaRandom = rand() % 3; // 0=A, 1=B, 2=C
+// Funcion usada en menu que permite seleccionar un territorio y estadistica random,
+// realiza su respectiva conversion y llama a la funcion aumentar_estadistica
+void seleccionar_territorio_estadistica_random(Territorio *cabeza)
+{
+	for (int i = 0; i < 3; i++)
+	{
+		int codigoRandom = (rand() % 9) + 1; // 1..9
+		int estadisticaRandom = rand() % 3;	 // 0=A, 1=B, 2=C
 
-		while(1){
-			Territorio* actual = buscarTerritorioPorNumero(codigoRandom, cabeza);
-			if(actual != NULL){
-				if(estadisticaRandom == 0){
+		while (1)
+		{
+			Territorio *actual = buscarTerritorioPorNumero(codigoRandom, cabeza);
+			if (actual != NULL)
+			{
+				if (estadisticaRandom == 0)
+				{
 					aumentar_estadistica_vecinos(cabeza, actual->codigo, 'A');
-
-				}else if(estadisticaRandom == 1){
+				}
+				else if (estadisticaRandom == 1)
+				{
 					aumentar_estadistica_vecinos(cabeza, actual->codigo, 'B');
-
-				}else{
+				}
+				else
+				{
 					aumentar_estadistica_vecinos(cabeza, actual->codigo, 'C');
 				}
-				break; //Si el territorio fue encontrado, si no, se repite el proceso
-				}
+				break; // Si el territorio fue encontrado, si no, se repite el proceso
 			}
-    }
-
+			else
+			{
+				// Si no se encontró, volver a generar otro código
+				codigoRandom = (rand() % 9) + 1;
+			}
+		}
+	}
 }
-
-

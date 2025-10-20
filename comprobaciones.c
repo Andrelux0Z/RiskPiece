@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "generacion_terreno.h"
+#include "comprobaciones.h"
 
 void ganar(void)
 {
@@ -38,7 +39,9 @@ int comprobar_ganar(Territorio *cabeza)
     if (contador == total_territorios)
     {
         ganar();
+        return 1;
     }
+    return 0;
 }
 
 // Función que comprueba condición de perder: hay más de tres territorios en la lista
@@ -65,9 +68,12 @@ void comprobar_eliminar_territorio(Territorio *cabeza)
     Territorio *actual = cabeza;
     while (actual != NULL)
     {
+        Territorio *siguiente = actual->siguiente;
         if (actual->A == 3 && actual->B == 3 && actual->C == 3)
-            eliminarTerritorio(actual, actual->codigo); //Eliminar territorio si ABC son 3
-            actual = actual->siguiente;
+        {
+            eliminarTerritorio(cabeza, actual->codigo); // Eliminar territorio si ABC son 3
+        }
+        actual = siguiente;
     }
 }
 
